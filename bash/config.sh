@@ -1,9 +1,9 @@
 export LSCOLORS="exfxcxdxbxegedabagacad"
 export CLICOLOR=true
 
-# fpath=($BASH_DOT/functions $fpath)
+# fpath=($DOTFILES_ROOT/functions $fpath)
 
-# autoload -U $BASH_DOT/functions/*(:t)
+# autoload -U $DOTFILES_ROOT/functions/*(:t)
 
 HISTFILE=~/.bash_history
 HISTSIZE=10000

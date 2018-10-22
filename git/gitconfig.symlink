@@ -9,7 +9,7 @@
     cmd = code --wait --diff $LOCAL $REMOTE
 
 [alias]
-        rank-contributors = !$BASH_DOT/bin/git-rank-contributors
+        rank-contributors = !$DOTFILE_ROOT/bin/git-rank-contributors
         count   = !git shortlog -sn
         
         # View abbreviated SHA, description, and history graph of the latest 20 commits

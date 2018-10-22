@@ -159,20 +159,4 @@ setup_gitconfig && success 'set gitconfig' || fail "set gitconfig failed"
 # Install dotfiles
 install_dotfiles && success "installed dotfiles" || fail "installed dotfiles"
 
-# Install Apps in Brewfile
-if [ -x "$(command -v brew)" ];
-  then
-    brew bundle && success "installed brew bundle" || fail "installed brew bundle"
-else
-  user "skipping (install brew bundle), brew not installed"
-fi
-
-# Set macOS Defaults
-if [ "$(uname -s)" == "Darwin" ]
-then
-  run_script "./macos/set-defaults.sh"
-else
-  user "skipping (set macos defaults), not macos, no need to set defaults"
-fi
-
 title 'dotfile installer complete'
