@@ -1,9 +1,15 @@
 # Local/private config goes in the include
 [include]
         path = ~/.gitconfig.local
+    
+[diff]
+    tool = vscode
+
+[difftool "vscode"]
+    cmd = code --wait --diff $LOCAL $REMOTE
 
 [alias]
-        rank-contributors = !$ZSH/bin/git-rank-contributors
+        rank-contributors = !$BASH_DOT/bin/git-rank-contributors
         count   = !git shortlog -sn
         
         # View abbreviated SHA, description, and history graph of the latest 20 commits

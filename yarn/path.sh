@@ -1,7 +1,7 @@
 # sup yarn
 # https://yarnpkg.com
 
-if (( $+commands[yarn] ))
+if type "yarn"
 then
   export PATH="$PATH:`yarn global bin`"
 fi

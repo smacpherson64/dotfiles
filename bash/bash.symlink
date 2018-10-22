@@ -1,0 +1,32 @@
+# shortcut to this dotfiles path is $BASH_DOT
+export BASH_DOT=$HOME/.dotfiles
+export DOTFILES_ROOT=/mnt/c/Users/Seth/Projects/dotfiles
+
+# your project folder that we can `c [tab]` to
+export PROJECTS=~/projects
+
+# Stash your environment variables in ~/.localrc. This means they'll stay out
+# of your main dotfiles repository (which may be public, like this one), but
+# you'll have access to them in your scripts.
+if [[ -a ~/.localrc ]]
+then
+  source ~/.localrc
+fi
+
+# load the path files
+for file in $(find -H "$DOTFILES_ROOT" -maxdepth 2 -name 'path.sh')
+do
+ source $file
+done
+
+# load everything but the path and completion files
+for file in $(find -H "$DOTFILES_ROOT" -maxdepth 2 -name '*.sh' -not -name 'completion.sh' -not -name 'path.sh' -not -name 'install.sh' -not -name 'set-defaults.sh')
+do
+ source $file
+done
+
+# load every completion after autocomplete loads
+# for file in $(find -H "$DOTFILES_ROOT" -maxdepth 2 -name 'completion.sh')
+# do
+#  source $file
+# done

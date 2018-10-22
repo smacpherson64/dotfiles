@@ -75,7 +75,7 @@ command -v sha1sum > /dev/null || alias sha1sum="shasum"
 ###############################
 
 # Trim new lines and copy to clipboard
-alias copyline ="tr -d '\n' | pbcopy"
+alias copyline="tr -d '\n' | pbcopy"
 
 # URL-encode strings
 alias urlencode='python -c "import sys, urllib as ul; print ul.quote_plus(sys.argv[1]);"'

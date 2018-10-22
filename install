@@ -2,12 +2,17 @@
 #
 # bootstrap installs things.
 
-cd "$(dirname "$0")/.."
+# Set DOTFILES_ROOT ENV 
 DOTFILES_ROOT=$(pwd -P)
 
+# Stop on Errors
 set -e
 
-echo ''
+# Local Dotfiles Installer Commands
+
+title () {
+  printf "\n\033[00;32m $1\033[0m\n\n"
+}
 
 info () {
   printf "\r  [ \033[00;34m..\033[0m ] $1\n"
@@ -44,11 +49,8 @@ setup_gitconfig () {
     read -e git_authoremail
 
     sed -e "s/AUTHORNAME/$git_authorname/g" -e "s/AUTHOREMAIL/$git_authoremail/g" -e "s/GIT_CREDENTIAL_HELPER/$git_credential/g" git/gitconfig.local.symlink.example > git/gitconfig.local.symlink
-
-    success 'gitconfig'
   fi
 }
-
 
 link_file () {
   local src=$1 dst=$2
@@ -114,7 +116,7 @@ link_file () {
 
     if [ "$skip" == "true" ]
     then
-      success "skipped $src"
+      success "skipped $src - $dst exists"
     fi
   fi
 
@@ -125,9 +127,13 @@ link_file () {
   fi
 }
 
-install_dotfiles () {
-  info 'installing dotfiles'
+run_script () {
+  local script=$1
+  info "running: ${script}"
+  sh -c ${script} && success "${script} was successful" || fail "${script} failed"
+}
 
+install_dotfiles () {
   local overwrite_all=false backup_all=false skip_all=false
 
   for src in $(find -H "$DOTFILES_ROOT" -maxdepth 2 -name '*.symlink' -not -path '*.git*')
@@ -137,20 +143,36 @@ install_dotfiles () {
   done
 }
 
-setup_gitconfig
-install_dotfiles
 
-# If we're on a Mac, let's install and setup homebrew.
-if [ "$(uname -s)" == "Darwin" ]
-then
-  info "installing dependencies"
-  if source bin/dot | while read -r data; do info "$data"; done
+#
+# Initilization
+#
+
+title 'starting dotfile installer'
+
+# Run all installers (ignore order)
+find . -name install.sh | while read installer; do run_script ${installer}; done;
+
+# Setup gitconfig
+setup_gitconfig && success 'set gitconfig' || fail "set gitconfig failed"
+
+# Install dotfiles
+install_dotfiles && success "installed dotfiles" || fail "installed dotfiles"
+
+# Install Apps in Brewfile
+if [ -x "$(command -v brew)" ];
   then
-    success "dependencies installed"
-  else
-    fail "error installing dependencies"
-  fi
+    brew bundle && success "installed brew bundle" || fail "installed brew bundle"
+else
+  user "skipping (install brew bundle), brew not installed"
 fi
 
-echo ''
-echo '  All installed!'
+# Set macOS Defaults
+if [ "$(uname -s)" == "Darwin" ]
+then
+  run_script "./macos/set-defaults.sh"
+else
+  user "skipping (set macos defaults), not macos, no need to set defaults"
+fi
+
+title 'dotfile installer complete'
