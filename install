@@ -143,15 +143,11 @@ install_dotfiles () {
   done
 }
 
-
 #
 # Initilization
 #
 
 title 'starting dotfile installer'
-
-# Run all installers (ignore order)
-find . -name install.sh | while read installer; do run_script ${installer}; done;
 
 # Setup gitconfig
 setup_gitconfig && success 'set gitconfig' || fail "set gitconfig failed"
