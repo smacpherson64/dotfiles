@@ -1,7 +1,4 @@
 # sup yarn
 # https://yarnpkg.com
 
-if type "yarn"
-then
-  export PATH="$PATH:`yarn global bin`"
-fi
+type "yarn" >/dev/null && export PATH="$PATH:`yarn global bin`"
