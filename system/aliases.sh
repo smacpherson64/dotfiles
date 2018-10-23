@@ -59,7 +59,7 @@ done
 
 
 ###############################
-# Hash Sum 
+# Hash Sum
 ###############################
 
 # OS X has no `md5sum`, so use `md5` as a fallback
@@ -136,7 +136,7 @@ alias zip="zip -x *.DS_Store -x *__MACOSX* -x *.AppleDouble*"
 #------------------------------
 
 #  Update Homebrew and npm installed packages
-alias update='brew update; brew upgrade brew-cask; brew upgrade --all; brew cleanup; brew cask cleanup; npm update -g; yarn global upgrade'
+alias update='brew update; brew upgrade --all; brew cleanup; npm update -g; yarn global upgrade'
 
 # Clean up LaunchServices to remove duplicates in the “Open With” menu
 alias lscleanup="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user && killall Finder"
