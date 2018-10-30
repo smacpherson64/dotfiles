@@ -4,3 +4,6 @@ alias cls='clear' # Good 'ol Clear Screen command
 alias aliases="alias | sed 's/=.*//'"
 alias functions="declare -f | grep '^[a-z].* ()' | sed 's/{$//'"
 alias paths='echo -e ${PATH//:/\\n}'
+
+# Opens a new terminal in current working directory
+alias start="open -a Terminal '`pwd`'"
