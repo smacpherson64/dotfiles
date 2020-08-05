@@ -80,7 +80,7 @@
 
 [core]
         excludesfile = ~/.gitignore
-        editor = 'code --wait'
+	      editor = code --wait
 
         # Treat spaces before tabs and all kinds of trailing whitespace as an error
         # [default] trailing-space: looks for spaces at the end of a line
@@ -125,3 +125,11 @@
 
     # Include summaries of merged commits in newly created merge commit messages
     log = true
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[user]
+	name = Seth MacPherson
+	email = smacpherson@dmp.com
