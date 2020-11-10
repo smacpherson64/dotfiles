@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+
+const path = require("path");
+const { diffObjSpecs } = require("../node/json-diff");
+
+function main(...args) {
+  if (!args || args.length === 0) {
+    throw new Error(
+      "Missing arguments cannot diff, please provide two file locations. E.G: `json-diff ./base ./next`"
+    );
+  }
+
+  const base = require(path.resolve(args[0]));
+  const source = require(path.resolve(args[1]));
+
+  const results = diffObjSpecs(base, source);
+  console.log(JSON.stringify(results, null, 2));
+}
+
+main(...process.argv.slice(2));

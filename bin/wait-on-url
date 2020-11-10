@@ -1,0 +1,13 @@
+start=$SECONDS;
+
+until $(curl --output /dev/null --silent --head --fail --location --request GET $1); do
+    printf '.'
+    sleep 5
+done
+
+end=$SECONDS;
+
+echo "Site $1 is up at $(date), waited $((end - start)) seconds"
+
+osascript -e "display notification \"$1 is back up!\" with title \"Site is Available!\""
+osascript -e 'say "Site is up!"'

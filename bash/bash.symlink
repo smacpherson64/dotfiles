@@ -6,12 +6,17 @@ export DOTFILES_ROOT=$HOME/.dotfiles
 
 # your project folder that we can `c [tab]` to
 export PROJECTS=~/projects
+export PROTOTYPE=~/projects/prototypes
 
 # Sets Android Studio
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
 export ANDROID_HOME=/Users/smacpherson/Library/Android/sdk
 export ANDROID_SDK=/Users/smacpherson/Library/Android/sdk
 export PATH=$ANDROID_SDK/emulator:$ANDROID_SDK/tools:$PATH
+
+export PATH="$HOME/.cargo/bin:$PATH"
+
+export PATH="$DOTFILES_ROOT/bin:~/bin:$PATH"
 
 export NVM_DIR="$HOME/.nvm"
   [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm

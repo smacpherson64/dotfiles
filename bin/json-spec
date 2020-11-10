@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+
+const path = require("path");
+const { getFlatSpec } = require("../node/json-diff");
+
+function main(...args) {
+  if (!args || args.length === 0) {
+    throw new Error(
+      "Missing arguments the file location to spec. E.G: `json-spec ./some-json-file`"
+    );
+  }
+
+  const base = require(path.resolve(args[0]));
+
+  const results = getFlatSpec(base);
+  console.log(JSON.stringify(results, null, 2));
+}
+
+main(...process.argv.slice(2));
