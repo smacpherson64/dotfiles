@@ -20,11 +20,9 @@ git_status () {
     number=$($git cherry -v origin/$(git symbolic-ref --short HEAD) 2>/dev/null | wc -l | bc)
     branch=$($git symbolic-ref HEAD 2>/dev/null)
 
-    if [[ $number ]]
+    if [[ $number > 0 ]]
     then
       echo "%{$fg_bold[white]%} (↑$number)%{$reset_color%}"
-    else 
-      echo "%{$fg_bold[magenta]%} (no remote)%{$reset_color%}"
     fi
   fi
 }
