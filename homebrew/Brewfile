@@ -1,0 +1,21 @@
+cask_args appdir: '~/Applications'
+
+tap 'homebrew/bundle'
+
+brew 'ack'
+brew 'coreutils'
+brew 'grc'
+brew 'jq'
+brew 'openssl'
+brew 'wget'
+brew 'yarn'
+brew 'nvm'
+brew 'deno'
+
+cask 'docker'
+cask 'firefox'
+cask 'google-chrome'
+cask 'postman'
+cask 'slack'
+cask 'spotify'
+cask 'visual-studio-code'

@@ -13,4 +13,8 @@ then
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
+brew update
+brew upgrade
+brew bundle --file=~/.dotfiles/homebrew/Brewfile
+
 exit 0
