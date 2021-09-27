@@ -8,7 +8,7 @@ brew 'grc'
 brew 'jq'
 brew 'openssl'
 brew 'wget'
-brew 'yarn'
+brew 'yarn', args: ["ignore-dependencies"]
 brew 'nvm'
 brew 'deno'
 
@@ -19,3 +19,4 @@ cask 'postman'
 cask 'slack'
 cask 'spotify'
 cask 'visual-studio-code'
+cask 'zoom'
