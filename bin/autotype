@@ -1,0 +1,189 @@
+#!/usr/bin/env osascript -l JavaScript
+
+events = Application('System Events')
+
+// Utils
+
+const always = (value) => () => value
+const T = always(true)
+const cond = (tuples) => (value) => {
+  const result = tuples.find(([predicate]) => predicate(value))
+
+  if (result === undefined) {
+    return undefined
+  }
+
+  const [, valueFn] = result
+
+  return valueFn(value)
+}
+
+const replaceAll = (target, replacement) => (text) =>
+  text.replaceAll(target, replacement)
+
+const split = (separator) => (text) => text.split(separator)
+
+// Helpers
+
+const getRandomNumber = (min, max) => Math.random() * (max - min) + min
+
+// Queue Base
+
+const Queue = (function () {
+  let store = []
+  function Queue(...args) {
+    store = args
+  }
+  Queue.prototype.push = function (item) {
+    return store.unshift(item)
+  }
+  Queue.prototype.pop = function () {
+    return store.pop()
+  }
+  Queue.prototype.toJSON = function () {
+    return [...store]
+  }
+  Queue.prototype.size = function () {
+    return store.length
+  }
+  return Queue
+})()
+
+// Constants
+
+const keyCodes = {
+  '→': 124,
+  '←': 123,
+  '↑': 126,
+  '↓': 125,
+  '⏎': 36, // Return
+  '⇥': 48, // Tab
+  '⌫': 51, // Delete
+  '⎋': 53 // Escape
+}
+
+const modifiers = {
+  '⌘': 'command down',
+  '^': 'control down',
+  '⌥': 'option down',
+  '⇧': 'shift down'
+}
+
+// Effect Creators
+
+const press = (payload) => ({ type: 'press', payload })
+const wait = (duration) => ({ type: 'wait', payload: duration })
+const activate = (payload) => [{ type: 'activate', payload }, wait(0.5)]
+
+const codeToLines = (code) => {
+  return [
+    trimMultipleNewLines,
+    convertTabsToSpaces,
+    removeTrailingSemiColons,
+    split('\n')
+  ].reduce((value, fn) => fn(value), code)
+}
+
+const trimMultipleNewLines = replaceAll(/\n(\n|\r)+/gi, '\n')
+const convertTabsToSpaces = replaceAll(/\t/gi, '  ')
+const removeTrailingSemiColons = replaceAll(/;(\s*)$/gi, '')
+const matchesAutoClosedLine = (text) =>
+  typeof text === 'string'
+    ? /^[\]\}\`\)]+$/.test(text.trim().trimStart())
+    : false
+const isChar = (char) => (value) => char === value
+
+const parseCode = (code) => {
+  return codeToLines(code)
+    .filter(Boolean)
+    .map(
+      cond([
+        [matchesAutoClosedLine, () => [press('↓'), wait(0.1), press('⏎')]],
+        [
+          T,
+          (line) => {
+            return Array.from(line.trimStart())
+              .map(press)
+              .concat([press('⏎')])
+          }
+        ]
+      ])
+    )
+}
+
+const navigateToLine = (line, column = 1) => {
+  wait(0.3)
+  press('⌘p')
+  typeSlow(asText(`:${line}:${column}`))
+  wait(0.5)
+}
+
+const clearFile = () => [
+  press('⌘a'), // select all
+  wait(0.3),
+  press('⌫'), // delete
+  wait(0.3)
+]
+
+const focusEditor = () => [press('⌘j')]
+
+const pressEffect = (key) => {
+  const using = []
+
+  while (key.length > 1) {
+    if (modifiers[key[0]] == undefined) {
+      throw new Error(key[0] + ' is not a recognized modifier key')
+    }
+
+    using.push(modifiers[key[0]])
+    key = key.slice(1)
+  }
+
+  console.log(key, key.length, key.charCodeAt(0))
+
+  if (keyCodes[key] !== undefined) {
+    events.keyCode(keyCodes[key], { using })
+  } else if (using.length > 0) {
+    events.keystroke(key.toLowerCase(), { using })
+  } else if (key.codePointAt(0) > 128) {
+    const app = Application.currentApplication()
+    app.includeStandardAdditions = true
+
+    app.setTheClipboardTo(key)
+    events.keystroke('v', { using: 'command down' })
+  } else {
+    events.keystroke(key, { using })
+  }
+}
+
+function runEffect(effect) {
+  // console.log('Running effect', JSON.stringify(effect, null, 2))
+  if (effect.type === 'activate') {
+    Application(effect.payload).activate()
+  } else if (effect.type === 'wait') {
+    delay(effect.payload)
+  } else if (effect.type === 'press') {
+    pressEffect(effect.payload)
+  } else {
+    throw new Error(`${effect.type} type effect is unknown`)
+  }
+}
+
+function run(argv) {
+  const code = argv[0]
+  const queue = new Queue()
+
+  queue.push(activate('Visual Studio Code'))
+  queue.push(focusEditor())
+  queue.push(clearFile())
+
+  queue.push(parseCode(code))
+
+  queue.push(wait(0.5))
+  queue.push(press('⇧⌥f'))
+
+  while (queue.size() > 0) {
+    const effects = [queue.pop()].flat(Infinity)
+    effects.forEach(runEffect)
+  }
+}
