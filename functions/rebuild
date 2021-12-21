@@ -1,0 +1,4 @@
+rebuild() {
+  local container=$1
+  docker-compose stop $container && docker-compose build --no-cache $container && docker-compose start $container
+}
