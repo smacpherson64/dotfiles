@@ -5,3 +5,6 @@
 
 echo "› sudo softwareupdate -i -a"
 sudo softwareupdate -i -a
+
+echo "> updating launchagents"
+cp -R ~/.dotfiles/macos/launchagents/* ~/Library/LaunchAgents
