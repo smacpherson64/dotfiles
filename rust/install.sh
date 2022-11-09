@@ -1,14 +1,16 @@
-#!/bin/sh
-#
-# Rust
-#
-# This installs rust
+#!/usr/bin/env bash
 
-# Check for rust
+# Installs or updates Rust
+
+set -e
+
 if test ! $(which rustup)
 then
-  echo "  Installing Rust for you."
-  /bin/bash -c "$(curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs)"
+  echo "Installing Rust"
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs
+else
+  echo "Updating Rust"
+  rustup update
 fi
 
 exit 0

@@ -12,11 +12,11 @@ brew 'wget'
 brew 'yarn', args: ["ignore-dependencies"]
 brew 'nvm'
 brew 'deno'
+brew 'ffmpeg'
 
 cask 'docker'
 cask 'firefox'
 cask 'google-chrome'
-cask 'postman'
 cask 'slack'
 cask 'spotify'
 cask 'visual-studio-code'

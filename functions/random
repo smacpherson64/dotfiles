@@ -1,5 +1,7 @@
 #!/bin/sh
+
 # Generate a random string
+
 function random() {
   if [ -z "${1}" ]; then
       echo "ERROR: Specify amount of random characters to generate.";
