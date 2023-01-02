@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
+set -e
 
 # Kills a process holding on to a port
 # Example: killport 8080
-
-set -e
 
 PROCESSES=$(lsof -t -i:$1);
 
