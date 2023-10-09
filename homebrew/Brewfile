@@ -6,12 +6,10 @@ brew 'watchman'
 brew 'ack'
 brew 'coreutils'
 brew 'grc'
-brew 'jq'
 brew 'openssl'
 brew 'wget'
 brew 'yarn', args: ["ignore-dependencies"]
 brew 'nvm'
-brew 'deno'
 brew 'ffmpeg'
 
 cask 'docker'
