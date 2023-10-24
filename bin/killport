@@ -6,8 +6,8 @@ set -e
 
 PROCESSES=$(lsof -t -i:$1);
 
-if [ $PROCESSES ] 
-then 
-  kill $PROCESSES 
-fi
+for process in $PROCESSES ; do
+  echo "Killing process $process"
+  kill $process
+done
 
