@@ -37,3 +37,27 @@ bindkey '^[[5D' beginning-of-line
 bindkey '^[[5C' end-of-line
 bindkey '^[[3~' delete-char
 bindkey '^?' backward-delete-char
+
+# Set Node.js version from .nvmrc in current directory
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+nvm_auto_use() {
+  local node_version="$(nvm version)"
+  local nvmrc_path="$(nvm_find_nvmrc)"
+
+  if [ -n "$nvmrc_path" ]; then
+    local nvmrc_node_version="$(cat "$nvmrc_path")"
+
+    if [ "$node_version" != "$nvmrc_node_version" ]; then
+      nvm install &> /dev/null
+      nvm use &> /dev/null
+    fi
+  else
+    nvm install --lts &> /dev/null
+    nvm use default &> /dev/null
+  fi
+}
+
+add-zsh-hook chpwd nvm_auto_use
+nvm_auto_use
