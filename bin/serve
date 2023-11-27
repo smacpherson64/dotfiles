@@ -1,0 +1,66 @@
+#!/usr/bin/env -S deno run --allow-read --allow-net --allow-sys
+
+import {parse} from 'https://deno.land/std/flags/mod.ts'
+import {existsSync as exists} from 'https://deno.land/std/fs/exists.ts'
+import {join} from 'https://deno.land/std/path/mod.ts'
+
+const {
+  port = 50000,
+  spa = false,
+  _: [dir = '.'],
+} = parse(Deno.args)
+
+const server = Deno.listen({port})
+console.log(`File server running on http://localhost:${port}/`)
+
+for await (const conn of server) {
+  for await (const requestEvent of Deno.serveHttp(conn)) {
+    const url = new URL(requestEvent.request.url)
+    const pathname = decodeURIComponent(url.pathname)
+
+    let file
+    const requestPath = join(dir, pathname)
+
+    if (exists(requestPath, {isReadable: true, isFile: true})) {
+      file = await Deno.open(requestPath, {read: true})
+    }
+
+    if (!file) {
+      const indexPath = join(requestPath, 'index.html')
+
+      if (
+        exists(indexPath, {
+          isReadable: true,
+          isDirectory: true,
+        })
+      ) {
+        try {
+          file = await Deno.open(indexPath, {read: true})
+        } catch {}
+      }
+    }
+
+    if (!file && spa) {
+      const spaIndex = join(dir, 'index.html')
+
+      try {
+        file = await Deno.open(spaIndex, {read: true})
+      } catch {}
+    }
+
+    if (!file) {
+      // If the file cannot be opened, return a "404 Not Found" response
+      const notFoundResponse = new Response('404 Not Found', {status: 404})
+      await requestEvent.respondWith(notFoundResponse)
+      continue
+    }
+
+    // Build a readable stream so the file doesn't have to be fully loaded into
+    // memory while we send it
+    const readableStream = file.readable
+
+    // Build and send the response
+    const response = new Response(readableStream)
+    await requestEvent.respondWith(response)
+  }
+}
