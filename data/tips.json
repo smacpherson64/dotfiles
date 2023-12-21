@@ -1,0 +1,5 @@
+[
+  "Run `size` to get human readable sizes of folders and files",
+  "Use `tab` top open a new tab in a terminal",
+  "`killport -p port` kills all processes on a port"
+]

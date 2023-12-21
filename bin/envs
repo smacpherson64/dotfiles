@@ -2,3 +2,4 @@
 
 const envs = Deno.env.toObject()
 console.log(JSON.stringify(envs, null, 2))
+
