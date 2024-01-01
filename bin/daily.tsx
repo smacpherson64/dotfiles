@@ -12,6 +12,23 @@ import {getRandomInt} from '../_helpers/numbers.ts'
 import tips from "../data/tips.json" with { type: "json" };
 import values from "../data/values.json" with { type: "json" };
 
+/**
+- Tired? (Body or mind?) body - rest, mind - meditation & rest
+- Bored? (purpose wonder exercise variance creativity train)
+- Happy
+- Frustrated / Angry (fear training, breathing, ego dump, meditation)
+- Overwhelmed (break, rest, focus, breath, deconstruct)
+- Hungry
+
+
+# Recognizing when I am in “focus mode”
+- Step back and "see more"
+- Do I know what day it is?
+- Do I remember what happened this week?
+- What am I focusing on? Why?
+ */
+
+
 const todaysValue = values[getDayOfYear(new Date()) % values.length]
 let lastTip = tips[getRandomInt(0, tips.length - 1)]
 
