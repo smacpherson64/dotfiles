@@ -19,9 +19,7 @@ import values from "../data/values.json" with { type: "json" };
 - Frustrated / Angry (fear training, breathing, ego dump, meditation)
 - Overwhelmed (break, rest, focus, breath, deconstruct)
 - Hungry
-
-
-# Recognizing when I am in “focus mode”
+- Recognizing when I am in “focus mode”
 - Step back and "see more"
 - Do I know what day it is?
 - Do I remember what happened this week?
