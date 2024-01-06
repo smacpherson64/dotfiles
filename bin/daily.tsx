@@ -1,7 +1,35 @@
 #!/usr/bin/env -S deno run --allow-env=PLUGIN_URL,DENO_DIR,HOME --allow-write --allow-read --unstable --allow-ffi
 
+/**
+ * Future ideas:
+ *
+ * - Tired? (Body or mind?) body - rest, mind - meditation & rest
+ * - Bored? (purpose wonder exercise variance creativity train)
+ * - Happy
+ * - Frustrated / Angry (fear training, breathing, ego dump, meditation)
+ * - Overwhelmed (break, rest, focus, breath, deconstruct)
+ * - Hungry
+ * - Recognizing when I am in “focus mode”
+ * - Step back and "see more"
+ * - Do I know what day it is?
+ * - Do I remember what happened this week?
+ * - What am I focusing on? Why?
+ */
+
+/**
+ * This is the initial react version
+ *
+ * CONS:
+ * - React is heavy (doesn't matter in this context as much)
+ * - Requires a build step (JSX)
+ *
+ * PROS:
+ * - JSX means prettier is enabled so auto formatting.
+ * - JSX opens us for JS composition still
+ * - Easy to create components 
+ */
+
 import * as React from 'npm:react'
-import {ComponentProps} from 'npm:@types/react'
 import * as ReactDOMServer from 'npm:react-dom/server'
 import {SizeHint, Webview} from 'https://deno.land/x/webview@0.7.6/mod.ts'
 
@@ -11,21 +39,6 @@ import {getRandomInt} from '../_helpers/numbers.ts'
 
 import tips from "../data/tips.json" with { type: "json" };
 import values from "../data/values.json" with { type: "json" };
-
-/**
-- Tired? (Body or mind?) body - rest, mind - meditation & rest
-- Bored? (purpose wonder exercise variance creativity train)
-- Happy
-- Frustrated / Angry (fear training, breathing, ego dump, meditation)
-- Overwhelmed (break, rest, focus, breath, deconstruct)
-- Hungry
-- Recognizing when I am in “focus mode”
-- Step back and "see more"
-- Do I know what day it is?
-- Do I remember what happened this week?
-- What am I focusing on? Why?
- */
-
 
 const todaysValue = values[getDayOfYear(new Date()) % values.length]
 let lastTip = tips[getRandomInt(0, tips.length - 1)]
@@ -66,7 +79,7 @@ function getState(events: AppEvent[]) {
       blueberries: 0,
       nectarine: 0,
       popcorn: 0,
-      other: 0
+      other: 0,
     },
     posture: {
       last: null,
@@ -132,7 +145,7 @@ function getState(events: AppEvent[]) {
           state.snacksConsumed.popcorn += 1
           break
         }
-        
+
         default: {
           state.snacksConsumed.other += 1
           break
@@ -162,34 +175,6 @@ function getTimeDiff(seconds: number) {
   return [hours && `${hours}H`, minutes && `${minutes}M`]
     .filter(Boolean)
     .join(' ')
-}
-
-function EmojiButton(props: ComponentProps<'button'>) {
-  return (
-    <button
-      type="submit"
-      className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-      {...props}
-    />
-  )
-}
-
-function EmotionButton({
-  emotion,
-  children,
-}: {
-  emotion: string
-  children: string
-}) {
-  return (
-    <EmojiButton
-      name="emotion"
-      value={emotion}
-      title={emotion}
-      aria-label={emotion}>
-      {children}
-    </EmojiButton>
-  )
 }
 
 const MainPage = ({state}: {state: State}) => (
@@ -226,25 +211,111 @@ const MainPage = ({state}: {state: State}) => (
       <form id="daily" className="h-full">
         <button className="sr-only">Submit</button>
         <section className="p-3">
-          <header className="sr-only">
-            How are you?
-          </header>
+          <header className="sr-only">How are you?</header>
           <div className="grid grid-cols-6 text-[36px] mt-2">
-            <EmotionButton emotion="happy">😀</EmotionButton>
-            <EmotionButton emotion="excited">🥳</EmotionButton>
-            <EmotionButton emotion="loved">😊</EmotionButton>
-            <EmotionButton emotion="wowed">🤩</EmotionButton>
-            <EmotionButton emotion="playful">😋</EmotionButton>
-            <EmotionButton emotion="shocked">🫢</EmotionButton>
-            <EmotionButton emotion="pensive">🤔</EmotionButton>
-            <EmotionButton emotion="pained">😑</EmotionButton>
-            <EmotionButton emotion="overwhelmed">😵‍💫</EmotionButton>
-            <EmotionButton emotion="tired">😴</EmotionButton>
-            <EmotionButton emotion="angry">😠</EmotionButton>
-            <EmotionButton emotion="sad">🙁</EmotionButton>
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              name="emotion"
+              value="happy"
+              aria-label="happy">
+              😀
+            </button>
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              name="emotion"
+              value="excited"
+              aria-label="excited">
+              🥳
+            </button>
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              name="emotion"
+              value="loved"
+              aria-label="loved">
+              😊
+            </button>
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              name="emotion"
+              value="wonder"
+              aria-label="wonder">
+              🤩
+            </button>
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              name="emotion"
+              value="playful"
+              aria-label="playful">
+              😋
+            </button>
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              name="emotion"
+              value="shocked"
+              aria-label="shocked">
+              🫢
+            </button>
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              name="emotion"
+              value="pensive"
+              aria-label="pensive">
+              🤔
+            </button>
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              name="emotion"
+              value="pained"
+              aria-label="pained">
+              😑
+            </button>
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              name="emotion"
+              value="overwhelmed"
+              aria-label="overwhelmed">
+              😵‍💫
+            </button>
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              name="emotion"
+              value="tired"
+              aria-label="tired">
+              😴
+            </button>
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              name="emotion"
+              value="angry"
+              aria-label="angry">
+              😠
+            </button>
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              name="emotion"
+              value="sad"
+              aria-label="sad">
+              🙁
+            </button>
           </div>
-          
-          <input placeholder="Whats on your mind?" name="info" className="p-1 text-xs w-full text-slate-100 bg-transparent focus:ring-0 focus:outline-none focus:border-blue-700 placeholder-slate-700 border-slate-800 border-2 mt-1" />
+
+          <input
+            placeholder="Whats on your mind?"
+            name="info"
+            className="p-1 text-xs w-full text-slate-100 bg-transparent focus:ring-0 focus:outline-none focus:border-blue-700 placeholder-slate-700 border-slate-800 border-2 mt-1"
+          />
         </section>
 
         <section className="p-3 bg-slate-700/40">
@@ -272,9 +343,14 @@ const MainPage = ({state}: {state: State}) => (
 
           <div>
             <div className="flex gap-2 mt-3">
-              <EmojiButton name="water-consumption" value="12">
-                🚰
-              </EmojiButton>
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              name="water-consumption" value="12"
+              aria-label="consumed 12 ounces of water">
+              🚰
+            </button>
+
               <div className="flex-1 w-full">
                 <div className="w-full bg-slate-700 rounded-full h-2.5">
                   <div
@@ -308,64 +384,99 @@ const MainPage = ({state}: {state: State}) => (
           <header className="text-[11px] text-slate-500 tracking-tight">
             Snack consumption
           </header>
-          
+
           <div className="grid grid-cols-6 text-[20px] mt-2">
             <div className="flex flex-col justify-center items-center">
-              <EmojiButton name="snack-consumption" value="banana">
-                🍌
-              </EmojiButton>
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              name="snack-consumption" value="banana"
+              aria-label="consumed a banana">
+               🍌
+            </button>
+
+      
               <span className="text-[11px] text-slate-500">
                 x{state.snacksConsumed.banana}
               </span>
             </div>
 
             <div className="flex flex-col justify-center items-center">
-              <EmojiButton name="snack-consumption" value="apple">
-                🍎
-              </EmojiButton>
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              name="snack-consumption" value="apple"
+              aria-label="consumed a apple">
+               🍎
+            </button>
+
               <span className="text-[11px] text-slate-500">
                 x{state.snacksConsumed.apple}
               </span>
             </div>
 
             <div className="flex flex-col justify-center items-center">
-              <EmojiButton name="snack-consumption" value="blueberries">
-                🫐
-              </EmojiButton>
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              name="snack-consumption" value="blueberries"
+              aria-label="consumed a cup of blueberries">
+               🫐
+            </button>
+
+        
               <span className="text-[11px] text-slate-500">
                 x{state.snacksConsumed.blueberries}
               </span>
             </div>
 
             <div className="flex flex-col justify-center items-center">
-              <EmojiButton name="snack-consumption" value="nectarine">
-                🍑
-              </EmojiButton>
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              name="snack-consumption" value="nectarine"
+              aria-label="consumed a nectarine">
+               🍑
+            </button>
+
               <span className="text-[11px] text-slate-500">
                 x{state.snacksConsumed.nectarine}
               </span>
             </div>
 
             <div className="flex flex-col justify-center items-center">
-              <EmojiButton name="snack-consumption" value="popcorn">
-                🍿
-              </EmojiButton>
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              name="snack-consumption" value="popcorn"
+              aria-label="consumed a bowl of popcorn">
+               🍿
+            </button>
+
               <span className="text-[11px] text-slate-500">
                 x{state.snacksConsumed.popcorn}
               </span>
             </div>
 
             <div className="flex flex-col justify-center items-center">
-              <EmojiButton>
-                ❔
-              </EmojiButton>
-              <span className="text-[11px] text-slate-500">
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              aria-label="Consumed something else">
+               ❔
+            </button>
+        <span className="text-[11px] text-slate-500">
                 x{state.snacksConsumed.other}
               </span>
             </div>
           </div>
 
-          <input autoCapitalize="none" placeholder="Other?" name="snack-consumption" className="p-1 text-xs w-full text-slate-100 bg-transparent focus:ring-0 focus:outline-none focus:border-blue-700 placeholder-slate-700 border-slate-800 border-2 mt-1" />
+          <input
+            autoCapitalize="none"
+            placeholder="Other?"
+            name="snack-consumption"
+            className="p-1 text-xs w-full text-slate-100 bg-transparent focus:ring-0 focus:outline-none focus:border-blue-700 placeholder-slate-700 border-slate-800 border-2 mt-1"
+          />
         </section>
 
         <section className="p-3  bg-slate-700/40">
@@ -378,18 +489,27 @@ const MainPage = ({state}: {state: State}) => (
           </header>
           <div className="p-3 grid grid-cols-2 text-[70px] leading-none">
             <div>
-              <EmojiButton name="posture" value="sitting">
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              name="posture" value="sitting"
+              aria-label="Sat down">
                 🪑
-              </EmojiButton>
+            </button>
+ 
               <span className="text-[11px] text-slate-500">
                 {getTimeDiff(state.posture.sitting)}
               </span>
             </div>
 
             <div>
-              <EmojiButton name="posture" value="standing">
+            <button
+              type="submit"
+              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
+              name="posture" value="standing"
+              aria-label="Stood up">
                 🧍‍♂️
-              </EmojiButton>
+            </button>
               <span className="text-[11px] text-slate-500">
                 {getTimeDiff(state.posture.standing)}
               </span>
@@ -456,5 +576,5 @@ webview.init(`setTimeout(tick, 60000)`)
 // Main
 ///////////////////////////////////
 
-webview.title = ("Daily Tracker")
+webview.title = 'Daily Tracker'
 webview.run()
