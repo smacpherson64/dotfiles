@@ -2,7 +2,7 @@
 
 /**
  * VanJS + HTM version
- * 
+ *
  * CONS:
  * - htm has a bit more edge cases than JSX
  *
@@ -13,8 +13,10 @@
  * - Easy to create components
  */
 
-import htm from 'https://unpkg.com/htm?module'
-import van from 'https://deno.land/x/minivan@0.5.3/src/van-plate.js'
+import htm from 'https://unpkg.com/htm@3.1.1/dist/htm.module.js?module'
+import van, {
+  type ChildDom,
+} from 'https://deno.land/x/minivan@0.5.3/src/van-plate.js'
 
 import {SizeHint, Webview} from 'https://deno.land/x/webview@0.7.6/mod.ts'
 
@@ -22,20 +24,19 @@ import {AppEvent, createEvent, getEvents} from '../data/export.ts'
 import {getDayOfYear, toSeconds} from '../_helpers/dates.ts'
 import {getRandomInt} from '../_helpers/numbers.ts'
 
-import tips from "../data/tips.json" with { type: "json" };
-import values from "../data/values.json" with { type: "json" };
+// import tips from "../data/tips.json" with { type: "json" };
+// import values from "../data/values.json" with { type: "json" };
 
 const render = van.html
 
 const html = htm.bind(
   (
-    type: string,
+    as: string | {(...args: any[]): ChildDom},
     props: {[key: string]: string | boolean},
-    ...children: any[]
+    ...children: ChildDom[]
   ) => {
-    const tag = van.tags[type]
-    if (props) return tag(props, ...children)
-    return tag(...children)
+    const tag = typeof as === 'string' ? van.tags[as] : as
+    return props ? tag(props, ...children) : tag(...children)
   },
 )
 

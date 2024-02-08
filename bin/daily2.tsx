@@ -10,7 +10,7 @@
  * - No build step required
  * - auto formatting
  * - JS composition
- * - Easy to create components 
+ * - Easy to create components
  */
 
 import van from 'https://deno.land/x/minivan@0.5.3/src/van-plate.js'
@@ -21,8 +21,8 @@ import {AppEvent, createEvent, getEvents} from '../data/export.ts'
 import {getDayOfYear, toSeconds} from '../_helpers/dates.ts'
 import {getRandomInt} from '../_helpers/numbers.ts'
 
-import tips from "../data/tips.json" with { type: "json" };
-import values from "../data/values.json" with { type: "json" };
+// import tips from "../data/tips.json" with { type: "json" };
+// import values from "../data/values.json" with { type: "json" };
 
 const {
   form,
@@ -180,8 +180,8 @@ function getTimeDiff(seconds: number) {
 
 const MainPage = ({state}: {state: State}) => {
   const waterConsumptionPercentage = state.waterConsumed
-  ? Math.min(100, Math.round((state.waterConsumed / 96) * 100))
-  : 0;
+    ? Math.min(100, Math.round((state.waterConsumed / 96) * 100))
+    : 0
 
   return html(
     {lang: 'en-US', class: 'bg-slate-800'},
@@ -208,11 +208,12 @@ const MainPage = ({state}: {state: State}) => {
         }
         document.addEventListener('submit', handleEvent)
       `,
-      )
+      ),
     ),
 
     body(
       {class: 'h-screen'},
+
       form(
         {id: 'daily', class: 'h-full'},
         button({class: 'sr-only'}, 'Submit'),
@@ -437,7 +438,7 @@ const MainPage = ({state}: {state: State}) => {
                   div({
                     class:
                       'bg-gradient-to-r from-blue-300 via-sky-500 to-blue-500 h-2.5 rounded-full',
-                    style: `width: ${waterConsumptionPercentage}%;`
+                    style: `width: ${waterConsumptionPercentage}%;`,
                   }),
                 ),
 
@@ -661,7 +662,7 @@ const MainPage = ({state}: {state: State}) => {
       ),
     ),
   )
-        }
+}
 
 ///////////////////////////////////
 // Webview
