@@ -1,0 +1,5 @@
+#!/usr/bin/env -S deno run --allow-env
+
+const envs = Deno.env.toObject()
+console.log(JSON.stringify(envs, null, 2))
+

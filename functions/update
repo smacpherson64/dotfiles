@@ -1,0 +1,3 @@
+update() {
+    sh $ZSH/script/install
+}

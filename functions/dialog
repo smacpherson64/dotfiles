@@ -1,0 +1,2 @@
+
+osascript -e "display dialog \"$1\""

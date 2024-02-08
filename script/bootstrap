@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
-#
-# bootstrap installs things.
+set -e
+
+# Install.
 
 cd "$(dirname "$0")/.."
 DOTFILES_ROOT=$(pwd -P)
-
-set -e
 
 echo ''
 
@@ -139,7 +138,8 @@ install_dotfiles () {
 
 setup_gitconfig
 install_dotfiles
-
+cp -R $DOTFILES_ROOT/configs/ ~
+ 
 # If we're on a Mac, let's install and setup homebrew.
 if [ "$(uname -s)" == "Darwin" ]
 then
