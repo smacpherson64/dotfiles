@@ -42,6 +42,11 @@ bindkey '^?' backward-delete-char
 export NVM_DIR="$ZSH/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
+# on MacOS had to set to get this to work right for Node14
+# arch -x86_64 zsh
+
+autoload -U add-zsh-hook
+
 nvm_auto_use() {
   local node_version="$(nvm version)"
   local nvmrc_path="$(nvm_find_nvmrc)"

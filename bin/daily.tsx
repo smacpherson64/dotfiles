@@ -1,4 +1,5 @@
-#!/usr/bin/env -S deno run --allow-env=PLUGIN_URL,DENO_DIR,HOME --allow-write --allow-read --unstable --allow-ffi
+#!/usr/bin/env -S deno run --allow-env=PLUGIN_URL,DENO_DIR,HOME --allow-write --allow-read --unstable-ffi --allow-ffi
+
 
 /**
  * Future ideas:
@@ -16,21 +17,12 @@
  * - What am I focusing on? Why?
  */
 
-/**
- * This is the initial react version
- *
- * CONS:
- * - React is heavy (doesn't matter in this context as much)
- * - Requires a build step (JSX)
- *
- * PROS:
- * - JSX means prettier is enabled so auto formatting.
- * - JSX opens us for JS composition still
- * - Easy to create components 
- */
 
-import * as React from 'npm:react'
-import * as ReactDOMServer from 'npm:react-dom/server'
+import htm from 'https://unpkg.com/htm@3.1.1/dist/htm.module.js?module'
+import van, {
+  type ChildDom,
+} from 'https://deno.land/x/minivan@0.5.3/src/van-plate.js'
+
 import {SizeHint, Webview} from 'https://deno.land/x/webview@0.7.6/mod.ts'
 
 import {AppEvent, createEvent, getEvents} from '../data/export.ts'
@@ -39,6 +31,33 @@ import {getRandomInt} from '../_helpers/numbers.ts'
 
 import tips from "../data/tips.json" with { type: "json" };
 import values from "../data/values.json" with { type: "json" };
+
+const render = van.html
+
+const html = htm.bind(
+  (
+    as: string | {(...args: any[]): ChildDom},
+    props: {[key: string]: string | boolean},
+    ...children: ChildDom[]
+  ) => {
+    const tag = typeof as === 'string' ? van.tags[as] : as
+    return props ? tag(props, ...children) : tag(...children)
+  },
+)
+
+/**
+- Tired? (Body or mind?) body - rest, mind - meditation & rest
+- Bored? (purpose wonder exercise variance creativity train)
+- Happy
+- Frustrated / Angry (fear training, breathing, ego dump, meditation)
+- Overwhelmed (break, rest, focus, breath, deconstruct)
+- Hungry
+- Recognizing when I am in “focus mode”
+- Step back and "see more"
+- Do I know what day it is?
+- Do I remember what happened this week?
+- What am I focusing on? Why?
+ */
 
 const todaysValue = values[getDayOfYear(new Date()) % values.length]
 let lastTip = tips[getRandomInt(0, tips.length - 1)]
@@ -177,353 +196,359 @@ function getTimeDiff(seconds: number) {
     .join(' ')
 }
 
-const MainPage = ({state}: {state: State}) => (
-  <html lang="en-US" className="bg-slate-800">
-    <head>
-      <script src="https://cdn.tailwindcss.com"></script>
-      <script
-        async
-        defer
-        dangerouslySetInnerHTML={{
-          __html: `
-          document.addEventListener('submit', (event) => {
-            event.preventDefault();
+const MainPage = ({state}: {state: State}) => {
+  const waterConsumptionPercentage = state.waterConsumed
+    ? Math.min(100, Math.round((state.waterConsumed / 96) * 100))
+    : 0
 
+  return html`
+    <html lang="en-US" class="bg-slate-800">
+      <head>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script async defer>
+          function handleEvent(event) {
+            event.preventDefault()
             const formData = new FormData(event.target)
             formData.append(event.submitter.name, event.submitter.value)
             const data = Object.fromEntries(formData)
 
-            Object.entries(data).forEach(([key, value]) => {
+            Object.entries(data).forEach(function iterate([key, value]) {
               data[key] = data[key].toLowerCase()
 
-              if (value === "") {
+              if (value === '') {
                 delete data[key]
               }
             })
 
             submit({at: new Date().toISOString(), data})
-          })
-          `,
-        }}></script>
-    </head>
+          }
+          document.addEventListener('submit', handleEvent)
+        </script>
+      </head>
 
-    <body className="h-screen">
-      <form id="daily" className="h-full">
-        <button className="sr-only">Submit</button>
-        <section className="p-3">
-          <header className="sr-only">How are you?</header>
-          <div className="grid grid-cols-6 text-[36px] mt-2">
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              name="emotion"
-              value="happy"
-              aria-label="happy">
-              😀
-            </button>
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              name="emotion"
-              value="excited"
-              aria-label="excited">
-              🥳
-            </button>
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              name="emotion"
-              value="loved"
-              aria-label="loved">
-              😊
-            </button>
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              name="emotion"
-              value="wonder"
-              aria-label="wonder">
-              🤩
-            </button>
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              name="emotion"
-              value="playful"
-              aria-label="playful">
-              😋
-            </button>
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              name="emotion"
-              value="shocked"
-              aria-label="shocked">
-              🫢
-            </button>
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              name="emotion"
-              value="pensive"
-              aria-label="pensive">
-              🤔
-            </button>
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              name="emotion"
-              value="pained"
-              aria-label="pained">
-              😑
-            </button>
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              name="emotion"
-              value="overwhelmed"
-              aria-label="overwhelmed">
-              😵‍💫
-            </button>
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              name="emotion"
-              value="tired"
-              aria-label="tired">
-              😴
-            </button>
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              name="emotion"
-              value="angry"
-              aria-label="angry">
-              😠
-            </button>
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              name="emotion"
-              value="sad"
-              aria-label="sad">
-              🙁
-            </button>
-          </div>
+      <body class="h-screen">
+        <form id="daily" class="h-full">
+          <button class="sr-only">Submit</button>
+          <section class="p-3">
+            <header class="sr-only">How are you?</header>
+            <div class="grid grid-cols-6 text-[36px] mt-2">
+              <button
+                type="submit"
+                class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                name="emotion"
+                value="happy"
+                aria-label="happy"
+              >
+                😀
+              </button>
 
-          <input
-            placeholder="Whats on your mind?"
-            name="info"
-            className="p-1 text-xs w-full text-slate-100 bg-transparent focus:ring-0 focus:outline-none focus:border-blue-700 placeholder-slate-700 border-slate-800 border-2 mt-1"
-          />
-        </section>
-
-        <section className="p-3 bg-slate-700/40">
-          <header className="text-[11px] text-slate-500 tracking-tight">
-            Something to ponder:
-          </header>
-          <div className="p-3 text-white text-sm font-thin">
-            <strong>{state.value.value}</strong> {state.value.description}
-          </div>
-        </section>
-
-        <section className="p-3">
-          <header className="text-[11px] text-slate-500 tracking-tight flex justify-between">
-            <span>Tip:</span>{' '}
-          </header>
-          <div className="p-3 text-slate-400 text-[11px] font-light h-[3em]">
-            {state.tip}
-          </div>
-        </section>
-
-        <section className="p-3 bg-slate-700/40">
-          <header className="text-[11px] text-slate-500 tracking-tight">
-            <span>Water consumption:</span>
-          </header>
-
-          <div>
-            <div className="flex gap-2 mt-3">
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              name="water-consumption" value="12"
-              aria-label="consumed 12 ounces of water">
-              🚰
-            </button>
-
-              <div className="flex-1 w-full">
-                <div className="w-full bg-slate-700 rounded-full h-2.5">
+              <button
+                type="submit"
+                class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                name="emotion"
+                value="excited"
+                aria-label="excited"
+              >
+                🥳
+              </button>
+              <button
+                type="submit"
+                class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                name="emotion"
+                value="loved"
+                aria-label="loved"
+              >
+                😊
+              </button>
+              <button
+                type="submit"
+                class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                name="emotion"
+                value="wonder"
+                aria-label="wonder"
+              >
+                🤩
+              </button>
+              <button
+                type="submit"
+                class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                name="emotion"
+                value="playful"
+                aria-label="playful"
+              >
+                😋
+              </button>
+              <button
+                type="submit"
+                class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                name="emotion"
+                value="shocked"
+                aria-label="shocked"
+              >
+                🫢
+              </button>
+              <button
+                type="submit"
+                class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                name="emotion"
+                value="pensive"
+                aria-label="pensive"
+              >
+                🤔
+              </button>
+              <button
+                type="submit"
+                class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                name="emotion"
+                value="pained"
+                aria-label="pained"
+              >
+                😑
+              </button>
+              <button
+                type="submit"
+                class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                name="emotion"
+                value="overwhelmed"
+                aria-label="overwhelmed"
+              >
+                😵‍💫
+              </button>
+              <button
+                type="submit"
+                class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                name="emotion"
+                value="tired"
+                aria-label="tired"
+              >
+                😴
+              </button>
+              <button
+                type="submit"
+                class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                name="emotion"
+                value="angry"
+                aria-label="angry"
+              >
+                😠
+              </button>
+              <button
+                type="submit"
+                class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                name="emotion"
+                value="sad"
+                aria-label="sad"
+              >
+                🙁
+              </button>
+            </div>
+            <input
+              placeholder="Whats on your mind?"
+              name="info"
+              class="p-1 text-xs w-full text-slate-100 bg-transparent focus:ring-0 focus:outline-none focus:border-blue-700 placeholder-slate-700 border-slate-800 border-2 mt-1"
+            />
+          </section>
+          <section class="p-3 bg-slate-700/40">
+            <header class="text-[11px] text-slate-500 tracking-tight">
+              Something to ponder:
+            </header>
+            <div class="p-3 text-white text-sm font-thin">
+              <strong>${state.value.value}</strong>
+              ${state.value.description}
+            </div>
+          </section>
+          <section class="p-3">
+            <header
+              class="text-[11px] text-slate-500 tracking-tight flex justify-between"
+            >
+              <span>Tip:</span>
+            </header>
+            <div class="p-3 text-slate-400 text-[11px] font-light h-[3em]">
+              ${state.tip}
+            </div>
+          </section>
+          <section class="p-3 bg-slate-700/40">
+            <header class="text-[11px] text-slate-500 tracking-tight">
+              <span>Water consumption:</span>
+            </header>
+            <div>
+              <div class="flex gap-2 mt-3">
+                <button
+                  type="submit"
+                  class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                  name="water-consumption"
+                  value="12"
+                  aria-label="12"
+                >
+                  🚰
+                </button>
+                <div class="flex-1 w-full">
+                  <div class="w-full bg-slate-700 rounded-full h-2.5">
+                    <div
+                      class="bg-gradient-to-r from-blue-300 via-sky-500 to-blue-500 h-2.5 rounded-full"
+                      style="width: ${waterConsumptionPercentage}%"
+                    ></div>
+                  </div>
                   <div
-                    className="bg-gradient-to-r from-blue-200 via-blue-300 to-blue-500 h-2.5 rounded-full"
-                    style={{
-                      width: `${
-                        state.waterConsumed
-                          ? Math.min(100, (state.waterConsumed / 96) * 100)
-                          : 0
-                      }%`,
-                    }}></div>
-                </div>
-
-                <div className="grid w-[calc(100%+10px)] text-[9px] text-slate-500 gap-2 grid-cols-9">
-                  <span>0</span>
-                  <span>12</span>
-                  <span>24</span>
-                  <span>36</span>
-                  <span>48</span>
-                  <span>60</span>
-                  <span>72</span>
-                  <span>84</span>
-                  <span>96</span>
+                    class="grid w-[calc(100%+10px)] text-[9px] text-slate-500 gap-2 grid-cols-9"
+                  >
+                    <span>0</span>
+                    <span>12</span>
+                    <span>24</span>
+                    <span>36</span>
+                    <span>48</span>
+                    <span>60</span>
+                    <span>72</span>
+                    <span>84</span>
+                    <span>96</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
-
-        <section className="p-3">
-          <header className="text-[11px] text-slate-500 tracking-tight">
-            Snack consumption
-          </header>
-
-          <div className="grid grid-cols-6 text-[20px] mt-2">
-            <div className="flex flex-col justify-center items-center">
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              name="snack-consumption" value="banana"
-              aria-label="consumed a banana">
-               🍌
-            </button>
-
-      
-              <span className="text-[11px] text-slate-500">
-                x{state.snacksConsumed.banana}
-              </span>
+          </section>
+          <section class="p-3">
+            <header class="text-[11px] text-slate-500 tracking-tight">
+              Snack consumption
+            </header>
+            <div class="grid grid-cols-6 text-[20px] mt-2">
+              <div class="flex flex-col justify-center items-center">
+                <button
+                  type="submit"
+                  class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                  name="snack-consumption"
+                  value="banana"
+                  aria-label="banana"
+                >
+                  🍌
+                </button>
+                <span class="text-[11px] text-slate-500">
+                  x${state.snacksConsumed.banana}
+                </span>
+              </div>
+              <div class="flex flex-col justify-center items-center">
+                <button
+                  type="submit"
+                  class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                  name="snack-consumption"
+                  value="apple"
+                  aria-label="apple"
+                >
+                  🍎
+                </button>
+                <span class="text-[11px] text-slate-500">
+                  x${state.snacksConsumed.apple}
+                </span>
+              </div>
+              <div class="flex flex-col justify-center items-center">
+                <button
+                  type="submit"
+                  class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                  name="snack-consumption"
+                  value="blueberries"
+                  aria-label="blueberries"
+                >
+                  🫐
+                </button>
+                <span class="text-[11px] text-slate-500">
+                  x${state.snacksConsumed.blueberries}
+                </span>
+              </div>
+              <div class="flex flex-col justify-center items-center">
+                <button
+                  type="submit"
+                  class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                  name="snack-consumption"
+                  value="nectarine"
+                  aria-label="nectarine"
+                >
+                  🍑
+                </button>
+                <span class="text-[11px] text-slate-500">
+                  x${state.snacksConsumed.nectarine}
+                </span>
+              </div>
+              <div class="flex flex-col justify-center items-center">
+                <button
+                  type="submit"
+                  class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                  name="snack-consumption"
+                  value="popcorn"
+                  aria-label="popcorn"
+                >
+                  🍿
+                </button>
+                <span class="text-[11px] text-slate-500">
+                  x${state.snacksConsumed.popcorn}
+                </span>
+              </div>
+              <div class="flex flex-col justify-center items-center">
+                <button
+                  type="submit"
+                  class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                  aria-label="ate another snack"
+                >
+                  ❔
+                </button>
+                <span class="text-[11px] text-slate-500">
+                  x${state.snacksConsumed.other}
+                </span>
+              </div>
             </div>
-
-            <div className="flex flex-col justify-center items-center">
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              name="snack-consumption" value="apple"
-              aria-label="consumed a apple">
-               🍎
-            </button>
-
-              <span className="text-[11px] text-slate-500">
-                x{state.snacksConsumed.apple}
+            <input
+              autocapitalize="none"
+              placeholder="Other?"
+              name="snack-consumption"
+              class="p-1 text-xs w-full text-slate-100 bg-transparent focus:ring-0 focus:outline-none focus:border-blue-700 placeholder-slate-700 border-slate-800 border-2 mt-1"
+            />
+          </section>
+          <section class="p-3 bg-slate-700/40">
+            <header
+              class="text-[11px] text-slate-500 tracking-tight flex justify-between"
+            >
+              <span>Posture:</span>
+              <span class="text-[11px] text-slate-500 tracking-tight">
+                Currently: ${state.posture.current}
               </span>
+            </header>
+            <div class="p-3 grid grid-cols-2 text-[70px] leading-none">
+              <div>
+                <button
+                  type="submit"
+                  class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                  name="posture"
+                  value="sitting"
+                  aria-label="switch to sitting"
+                >
+                  🪑
+                </button>
+                <span class="text-[11px] text-slate-500">
+                  ${getTimeDiff(state.posture.sitting)}
+                </span>
+              </div>
+              <div>
+                <button
+                  type="submit"
+                  class="hover:scale-125 active:scale-95 transition-transform leading-tight"
+                  name="posture"
+                  value="standing"
+                  aria-label="switch to standing"
+                >
+                  🧍‍♂️
+                </button>
+                <span class="text-[11px] text-slate-500">
+                  ${getTimeDiff(state.posture.standing)}
+                </span>
+              </div>
             </div>
-
-            <div className="flex flex-col justify-center items-center">
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              name="snack-consumption" value="blueberries"
-              aria-label="consumed a cup of blueberries">
-               🫐
-            </button>
-
-        
-              <span className="text-[11px] text-slate-500">
-                x{state.snacksConsumed.blueberries}
-              </span>
-            </div>
-
-            <div className="flex flex-col justify-center items-center">
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              name="snack-consumption" value="nectarine"
-              aria-label="consumed a nectarine">
-               🍑
-            </button>
-
-              <span className="text-[11px] text-slate-500">
-                x{state.snacksConsumed.nectarine}
-              </span>
-            </div>
-
-            <div className="flex flex-col justify-center items-center">
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              name="snack-consumption" value="popcorn"
-              aria-label="consumed a bowl of popcorn">
-               🍿
-            </button>
-
-              <span className="text-[11px] text-slate-500">
-                x{state.snacksConsumed.popcorn}
-              </span>
-            </div>
-
-            <div className="flex flex-col justify-center items-center">
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              aria-label="Consumed something else">
-               ❔
-            </button>
-        <span className="text-[11px] text-slate-500">
-                x{state.snacksConsumed.other}
-              </span>
-            </div>
-          </div>
-
-          <input
-            autoCapitalize="none"
-            placeholder="Other?"
-            name="snack-consumption"
-            className="p-1 text-xs w-full text-slate-100 bg-transparent focus:ring-0 focus:outline-none focus:border-blue-700 placeholder-slate-700 border-slate-800 border-2 mt-1"
-          />
-        </section>
-
-        <section className="p-3  bg-slate-700/40">
-          <header className="text-[11px] text-slate-500 tracking-tight flex justify-between">
-            <span>Posture:</span>
-
-            <span className="text-[11px] text-slate-500 tracking-tight">
-              Currently: {state.posture.current}
-            </span>
-          </header>
-          <div className="p-3 grid grid-cols-2 text-[70px] leading-none">
-            <div>
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              name="posture" value="sitting"
-              aria-label="Sat down">
-                🪑
-            </button>
- 
-              <span className="text-[11px] text-slate-500">
-                {getTimeDiff(state.posture.sitting)}
-              </span>
-            </div>
-
-            <div>
-            <button
-              type="submit"
-              className="hover:scale-125 active:scale-95 transition-transform leading-tight"
-              name="posture" value="standing"
-              aria-label="Stood up">
-                🧍‍♂️
-            </button>
-              <span className="text-[11px] text-slate-500">
-                {getTimeDiff(state.posture.standing)}
-              </span>
-            </div>
-          </div>
-        </section>
-
-        <footer className="text-[9px] text-slate-600">
-          Last updated: {state.lastUpdated}
-        </footer>
-      </form>
-    </body>
-  </html>
-)
+          </section>
+          <footer class="text-[9px] text-slate-600">
+            Last updated: ${state.lastUpdated}
+          </footer>
+        </form>
+      </body>
+    </html>
+  `
+}
 
 ///////////////////////////////////
 // Webview
@@ -545,12 +570,7 @@ function update() {
     return `data:text/html;charset=UTF-8,${text}`
   }
 
-  const url = dataURL(
-    [
-      `<!DOCTYPE html>`,
-      ReactDOMServer.renderToString(<MainPage state={state} />),
-    ].join('\n'),
-  )
+  const url = dataURL(render(MainPage({state})))
   webview.navigate(url)
 }
 
