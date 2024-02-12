@@ -1,1 +1,0 @@
-osascript -e "display alert \"$1\" message \"$2\""

@@ -39,7 +39,7 @@ bindkey '^[[3~' delete-char
 bindkey '^?' backward-delete-char
 
 # Set Node.js version from .nvmrc in current directory
-export NVM_DIR="$HOME/.nvm"
+export NVM_DIR="$ZSH/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 nvm_auto_use() {

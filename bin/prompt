@@ -1,1 +1,4 @@
+#!/usr/bin/env bash
+set -e
+
 osascript -e "display dialog \"$1\""
