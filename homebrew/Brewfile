@@ -9,9 +9,7 @@ brew 'grc'
 brew 'openssl'
 brew 'wget'
 brew 'yarn', args: ["ignore-dependencies"]
-brew 'nvm'
 brew 'ffmpeg'
-brew 'deno'
 
 cask 'docker'
 cask 'firefox'
