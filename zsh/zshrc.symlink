@@ -1,14 +1,9 @@
 # shortcut to this dotfiles path is $ZSH
 export ZSH=$HOME/.dotfiles
 
-export PATH="/opt/homebrew/sbin:$PATH"
-
-export DENO_FUTURE=1
-
-. "$HOME/.cargo/env"
-
-export DENO_INSTALL="/Users/seth/.deno"
-export PATH="$DENO_INSTALL/bin:$PATH"
+# all of our zsh files
+typeset -U config_files
+config_files=($ZSH/**/*.zsh)
 
 # Stash local environment variables in ~/.localrc.
 if [[ -a ~/.localrc ]]
@@ -16,18 +11,14 @@ then
   source ~/.localrc
 fi
 
-# all of our zsh files
-typeset -U config_files
-config_files=($ZSH/**/*.zsh)
-
-# load the path files
-for file in ${(M)config_files:#*/path.zsh}
+# load all environment variables
+for file in ${(M)config_files:#*/env.zsh}
 do
   source $file
 done
 
-# load everything but the path and completion files
-for file in ${${config_files:#*/path.zsh}:#*/completion.zsh}
+# load everything but the env and completion files
+for file in ${${config_files:#*/env.zsh}:#*/completion.zsh:#*/env.zsh}
 do
   source $file
 done
@@ -52,6 +43,3 @@ zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
 bindkey "^[[A" up-line-or-beginning-search # Up
 bindkey "^[[B" down-line-or-beginning-search # Down
-export NVM_DIR="$HOME/.dotfiles/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

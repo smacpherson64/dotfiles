@@ -14,13 +14,12 @@ git_branch() {
   echo "on %{$fg_bold[magenta]%}${ref#refs/heads/}%{$reset_color%}"
 }
 
-
 user_name() {
   echo "%{$fg_bold[cyan]%}$(whoami)%{$reset_color%}"
 }
 
 directory_name() {
-  echo "%{$fg_bold[green]%}%2/%\/%{$reset_color%}"
+  echo "%{$fg_bold[green]%}%5/%\/%{$reset_color%}"
 }
 
 branch_name() {
