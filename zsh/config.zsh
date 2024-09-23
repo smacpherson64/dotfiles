@@ -38,12 +38,6 @@ bindkey '^[[5C' end-of-line
 bindkey '^[[3~' delete-char
 bindkey '^?' backward-delete-char
 
-# Set Node.js version from .nvmrc in current directory
-export NVM_DIR="$ZSH/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-
 # on MacOS had to set to get this to work right for Node14
 # arch -x86_64 zsh
 

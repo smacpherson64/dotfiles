@@ -11,5 +11,5 @@ Run this:
 ```sh
 git clone https://github.com/smacpherson64/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
-~/.dotfiles/script/bootstrap
+~/.dotfiles/bootstrap
 ```

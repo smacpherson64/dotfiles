@@ -1,30 +1,17 @@
 #!/usr/bin/env bash
 set -e
 
-# Install.
+export ZSH="$HOME/.dotfiles"
+export DOTFILES_ROOT="$HOME/.dotfiles"
 
-cd "$(dirname "$0")/.."
-DOTFILES_ROOT=$(pwd -P)
+source "$DOTFILES_ROOT/functions/fail"
+source "$DOTFILES_ROOT/functions/success"
+source "$DOTFILES_ROOT/functions/info"
+source "$DOTFILES_ROOT/functions/user"
+
+cd "$ZSH"
 
 echo ''
-
-info () {
-  printf "\r  [ \033[00;34m..\033[0m ] $1\n"
-}
-
-user () {
-  printf "\r  [ \033[0;33m??\033[0m ] $1\n"
-}
-
-success () {
-  printf "\r\033[2K  [ \033[00;32mOK\033[0m ] $1\n"
-}
-
-fail () {
-  printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
-  echo ''
-  exit
-}
 
 setup_gitconfig () {
   if ! [ -f git/gitconfig.local.symlink ]
@@ -143,22 +130,17 @@ install_dotfiles
 if [ "$(uname -s)" == "Darwin" ]
 then
   info "installing dependencies"
-  export ZSH=$HOME/.dotfiles
 
   # Set macOS defaults
-  $ZSH/macos/set-defaults.sh
+  $DOTFILES_ROOT/macos/set-defaults.sh
 
   # Install homebrew
-  $ZSH/homebrew/install.sh 2>&1
-
-  # Upgrade homebrew
-  echo "› brew update"
-  brew update
+  $DOTFILES_ROOT/homebrew/install.sh 2>&1
 
   # Install software
-  echo "› script/install"
-  $ZSH/script/install
+  info "Running install"
+  $DOTFILES_ROOT/bin/update
 fi
 
 echo ''
-echo '  All installed!'
+info '  All installed!'
