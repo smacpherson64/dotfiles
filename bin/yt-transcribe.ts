@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-read
+#!/usr/bin/env -S deno run --allow-read --allow-net=www.youtube.com:443
 
 import {parseArgs} from 'jsr:@std/cli'
 
@@ -154,6 +154,34 @@ function retrieveVideoId(videoId: string) {
 
 ////
 
-const {lang, id} = parseArgs(Deno.args, {default: {lang: 'en'}})
+const {
+  lang,
+  id,
+  output = 'text',
+} = parseArgs(Deno.args, {default: {lang: 'en'}})
 
-console.log(await fetchTranscript(id, lang ? {lang} : undefined))
+if (!id) {
+  console.error('🚨: missing `--id=xxxxxxx`')
+  Deno.exit(1)
+}
+
+const transcript = await fetchTranscript(id, lang ? {lang} : undefined)
+
+let result
+
+switch (output.toLocaleLowerCase()) {
+  case 'json': {
+    result = JSON.stringify(transcript, null, 2)
+    break
+  }
+  case 'text':
+  default: {
+    result = transcript.reduce(
+      (acc, part) => [acc, part?.text].filter(Boolean).join(' '),
+      '',
+    )
+    break
+  }
+}
+
+Deno.stdout.write(new TextEncoder().encode(result))
