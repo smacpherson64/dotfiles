@@ -10,6 +10,7 @@ brew 'openssl'
 brew 'wget'
 brew 'yarn', args: ["ignore-dependencies"]
 brew 'ffmpeg'
+brew 'gh'
 
 cask 'docker'
 cask 'firefox'
