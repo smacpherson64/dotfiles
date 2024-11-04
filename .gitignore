@@ -3,4 +3,4 @@ Brewfile.lock.json
 .nvm
 *.log
 personal.db
-local.zsh
+local

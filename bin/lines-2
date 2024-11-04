@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -e
+
+FOLDER="${1:-.}"
+TYPE="${2:-js}"
+
+(find "$FOLDER" -name "*.$TYPE" -print0 | xargs -0 cat ) | wc -l

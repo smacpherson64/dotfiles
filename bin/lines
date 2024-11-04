@@ -9,4 +9,9 @@ if (!file) {
 const newLine = `\n`
 const contents = await Deno.readTextFile(file)
 
-console.log(contents.split(newLine).length)
+console.log(
+  contents
+    .split(newLine)
+    .map((line) => line.trim())
+    .filter(Boolean).length,
+)
