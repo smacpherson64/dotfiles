@@ -1,0 +1,14 @@
+#!/usr/bin/env -S deno run --allow-read --allow-env=HOME --allow-net
+import {createGraph} from 'jsr:@deno/graph'
+import * as path from 'jsr:@std/path'
+
+const [file] = Deno.args
+
+if (!file) {
+  throw new Error('No file received, specify file E.G.: `graph example.txt`')
+}
+
+const base = path.toFileUrl(path.resolve(file))
+
+const graph = await createGraph(base.toString())
+console.log(JSON.stringify(graph, null, 2))
