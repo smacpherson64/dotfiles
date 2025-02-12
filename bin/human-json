@@ -1,0 +1,40 @@
+#!/usr/bin/env -S deno run --allow-read --allow-env=HOME --allow-net
+
+import {parseArgs} from 'jsr:@std/cli/parse-args'
+
+const encoder = new TextEncoder()
+
+const {
+  _: [json],
+} = parseArgs(Deno.args)
+
+const input = json.toString().trim()
+
+if (!input) {
+  Deno.stdout.write(encoder.encode(''))
+  Deno.exit(0)
+}
+
+const object = eval(`JSON.stringify(${input}, null, 2)`) as string
+
+const result = object
+  .split('\n')
+  .map((line) =>
+    line
+      .replace(/^(\W{1,})\"(.{1,})\"\:(.{1,})/, `$1$2:$3`)
+      .replace(/({|})/gi, '')
+      .replace(/,$/gi, '')
+      .replace(/^\W\W/, '')
+      .trimEnd(),
+  )
+  .filter(Boolean)
+  .join('\n')
+
+Deno.stdout.write(
+  encoder.encode(`
+  
+${result}
+  
+`),
+)
+Deno.exit(0)
