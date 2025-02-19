@@ -1,18 +1,18 @@
-#!/usr/bin/env -S deno run --allow-read --allow-env=HOME --allow-net
+#!/usr/bin/env -S deno run
 
 import {parseArgs} from 'jsr:@std/cli/parse-args'
 
-const encoder = new TextEncoder()
-
-const {
-  _: [json],
-} = parseArgs(Deno.args)
+// Passed explicitly or via stdin (E.G.: bash pipe)
+const json =
+  parseArgs(Deno.args)._?.[0] ??
+  (await new Response(Deno.stdin.readable).text()) ??
+  ''
 
 const input = json.toString().trim()
 
 if (!input) {
-  Deno.stdout.write(encoder.encode(''))
-  Deno.exit(0)
+  console.log('No JSON to format...')
+  Deno.exit(1)
 }
 
 const object = eval(`JSON.stringify(${input}, null, 2)`) as string
@@ -30,11 +30,11 @@ const result = object
   .filter(Boolean)
   .join('\n')
 
-Deno.stdout.write(
-  encoder.encode(`
-  
+const resultBuffer = new TextEncoder().encode(`
+ 
 ${result}
-  
-`),
-)
+    
+`)
+
+Deno.stdout.write(resultBuffer)
 Deno.exit(0)
