@@ -13,3 +13,5 @@ tell application "System Events"
     keystroke textToType
 end tell
 EOF
+
+sleep 1

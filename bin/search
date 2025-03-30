@@ -1,0 +1,20 @@
+#!/usr/bin/env -S deno run
+
+import {parseArgs} from 'jsr:@std/cli/parse-args'
+
+const {_: search, url = ''} = parseArgs(Deno.args)
+
+if (!search) {
+  console.log(
+    "No text to search for... Provide text, search 'text to search for'",
+  )
+  Deno.exit(1)
+}
+
+const result = `
+${[url, search].join('#:~:text=')}
+`
+
+const resultBuffer = new TextEncoder().encode(result)
+Deno.stdout.write(resultBuffer)
+Deno.exit(0)

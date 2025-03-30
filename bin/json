@@ -1,0 +1,117 @@
+#!/usr/bin/env -S deno run
+
+import {parseArgs} from 'jsr:@std/cli/parse-args'
+
+const {_: directInput, pretty} = parseArgs(Deno.args, {boolean: ['pretty']})
+
+const [command] = directInput
+
+switch (command.toString()) {
+  case 'get': {
+    const [, path, ...rest] = directInput
+    const input = await getInput(rest)
+
+    if (!input) {
+      console.log('No JS object to get...')
+      Deno.exit(1)
+    }
+
+    if (!path) {
+      console.log("No path found. E.G. expected: `json get 'a.b.c``")
+      Deno.exit(1)
+    }
+
+    const json = stringify(input)
+    let object = parse(json)
+    const location = path.toString().trim().split('.')
+
+    while (location.length) {
+      const prop = location.shift()
+      if (prop) {
+        object = object?.[prop]
+      }
+    }
+
+    if (typeof object === 'object') {
+      object = JSON.stringify(object, null, 2)
+
+      if (pretty) {
+        object = prettyFormat(object)
+      }
+    }
+
+    Deno.stdout.write(encode(object))
+    Deno.exit(0)
+    break
+  }
+
+  case 'parse': {
+    const [, ...rest] = directInput
+    const input = await getInput(rest)
+    let json = stringify(input)
+
+    if (pretty) {
+      json = prettyFormat(json)
+    }
+
+    Deno.stdout.write(encode(json))
+    Deno.exit(0)
+    break
+  }
+
+  default: {
+    console.log('No command found, expected: `json parse ...`')
+    Deno.exit(1)
+  }
+}
+
+////////////////////////////////
+// #region . Utils
+////////////////////////////////
+
+function prettyFormat(json: string) {
+  return json
+    .split('\n')
+    .map((line) =>
+      line
+        .replace(/^(\W{1,})\"(.{1,})\"\:(.{1,})/, `$1$2:$3`)
+        .replace(/({|})/gi, '')
+        .replace(/,$/gi, '')
+        .replace(/^\W\W/, '')
+        .trimEnd(),
+    )
+    .filter(Boolean)
+    .join('\n')
+}
+
+function encode(json: string) {
+  return new TextEncoder().encode(`
+
+${json} 
+
+`)
+}
+
+function stringify(input: string) {
+  return eval(`JSON.stringify(${input}, null, 2)`)
+}
+
+function parse(input: string) {
+  return JSON.parse(input)
+}
+
+async function getInput(
+  directInput: string | number | (string | number)[] = '',
+) {
+  let input = [directInput].flat().join(' ')
+
+  // If no direct input provided use the piped in value
+  input = input || (await new Response(Deno.stdin.readable).text())
+
+  // default to empty string
+  input = input || ''
+
+  input = input.trim()
+
+  return input
+}
