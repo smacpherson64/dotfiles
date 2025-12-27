@@ -39,5 +39,5 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 [user]
-	name = smacpherson64
+	name = Seth
 	email = smacpherson64@gmail.com
