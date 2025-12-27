@@ -4,14 +4,5 @@ DIR_NAME="$1"
 COMMAND="$2"
 
 osascript << EOF
-tell application "Terminal"
-    activate
-end tell
-tell application "System Events"
-    keystroke "t" using command down
-    set textToType to "cd ${DIR_NAME} && ${COMMAND}\n"
-    keystroke textToType
-end tell
+tell app "Terminal" to do script "cd ${DIR_NAME} && ${COMMAND}"
 EOF
-
-sleep 1
