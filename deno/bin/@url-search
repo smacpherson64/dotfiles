@@ -1,0 +1,46 @@
+#!/usr/bin/env -S deno run
+
+import {parseArgs} from 'jsr:@std/cli/parse-args'
+
+import {applyHelp, formatHelpMessage} from "../../_helpers/help.ts"
+
+//
+//
+//
+
+const DESCRIPTION="Creates a url that highlights certain text on a page in web browsers."
+
+const USAGE=`
+  Usage:
+    @url-search <text> --url
+
+  Options:
+    -u, --url         The url to search
+    -h, --help        Show this help message
+    --description     Show descriptive summary
+
+  Arguments:
+    <text>            The search text to highlight on the site
+
+  Examples:
+    @url-search 'This domain is for' --url='https://www.example.com'
+`
+
+applyHelp({ DESCRIPTION, USAGE, args: Deno.args })
+
+//
+//
+//
+
+const {_: search, url = ''} = parseArgs(Deno.args, {alias: {url: "u"}})
+
+if (!search || !url) {
+  formatHelpMessage({DESCRIPTION, USAGE})
+  Deno.exit(1)
+}
+
+const result = [url, search].join('#:~:text=')
+const resultBuffer = new TextEncoder().encode(result)
+
+Deno.stdout.write(resultBuffer)
+Deno.exit(0)

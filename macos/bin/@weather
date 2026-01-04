@@ -1,0 +1,32 @@
+#!/usr/bin/env zsh
+set -e
+
+#
+#
+#
+
+source "$DOTFILES/functions/help.sh"
+
+DESCRIPTION="Gets the hourly forecast of the weather in JSON"
+
+USAGE=$(cat <<EOF
+Usage: @weather
+
+Options:
+  -h, --help            Show this help message
+  --description         Show descriptive summary
+
+Example:
+  @weather
+
+EOF
+)
+
+
+applyHelp "$DESCRIPTION" "$USAGE" "all arguments optional" "$@"
+
+#
+#
+#
+
+shortcuts run @weather | cat

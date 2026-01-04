@@ -1,0 +1,47 @@
+#!/usr/bin/env zsh
+set -e
+
+#
+#
+#
+
+source "$DOTFILES/functions/help.sh"
+
+DESCRIPTION="Serves a local directory in HTTP."
+
+USAGE=$(cat <<EOF
+USAGE:
+  @serve path [options]
+
+OPTIONS:
+  -h, --help            Prints help information
+  -p, --port <PORT>     Set port (default is 8000)
+  --cors                Enable CORS via the "Access-Control-Allow-Origin" header
+  --host     <HOST>     Hostname (default is 0.0.0.0)
+  -c, --cert <FILE>     TLS certificate file (enables TLS)
+  -k, --key  <FILE>     TLS key file (enables TLS)
+  -H, --header <HEADER> Sets a header on every request.
+                        (e.g. --header "Cache-Control: no-cache")
+                        This option can be specified multiple times.
+  --no-dir-listing      Disable directory listing
+  --no-dotfiles         Do not show dotfiles
+  --no-cors             Disable cross-origin resource sharing
+  -v, --verbose         Print request level logs
+  -V, --version         Print version information
+
+  All TLS options are required when one is provided.
+
+EXAMPLE:
+  @serve .
+
+EOF
+)
+
+
+applyHelp "$DESCRIPTION" "$USAGE" "has required arguments" "$@"
+
+#
+#
+#
+
+exec deno run --allow-read --allow-net --allow-sys --no-config 'jsr:@std/http/file-server' "$@"

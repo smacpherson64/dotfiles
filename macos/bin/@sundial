@@ -1,0 +1,32 @@
+#!/usr/bin/env zsh
+set -e
+
+#
+#
+#
+
+source "$DOTFILES/functions/help.sh"
+
+DESCRIPTION="Gets the sunrise and sunset times"
+
+USAGE=$(cat <<EOF
+Usage: @sundial
+
+Options:
+  -h, --help            Show this help message
+  --description         Show descriptive summary
+
+Example:
+  @sundial
+
+EOF
+)
+
+
+applyHelp "$DESCRIPTION" "$USAGE" "all arguments optional" "$@"
+
+#
+#
+#
+
+shortcuts run @sundial | cat

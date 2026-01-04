@@ -1,10 +1,53 @@
 #!/usr/bin/env -S deno run
 
-import {parseArgs} from 'jsr:@std/cli/parse-args'
+import {parseArgs, type ParseOptions} from 'jsr:@std/cli/parse-args'
+import {applyHelp, formatHelpMessage} from "../../_helpers/help.ts"
 
-const {_: directInput, pretty} = parseArgs(Deno.args, {boolean: ['pretty']})
+//
+//
+//
 
-const [command] = directInput
+const DESCRIPTION="A tool for working with parsed json input"
+
+const USAGE=`
+  Usage:
+    @json get <path> [--pretty] [<json>]
+    @json parse [--pretty] [<json>]
+    @json -h | --help
+
+  Options:
+    -p, --pretty       Format the output with indentation
+    -h, --help         Show this help message
+    --description      Show descriptive summary
+
+  Commands:
+    get                Extracts a specific value from the JSON using a path
+    parse              Validates and/or prettifies the JSON string
+
+  Arguments:
+    <path>             The dot-notation path to the desired value (e.g., "users.0.name")
+    [json]             The JSON input string. If not provided, reads from standard input (stdin).
+
+  Examples:
+    echo '{"a":1}' | @json parse --pretty
+    @json get "a.b" '{"a":{"b":2}}'
+`
+
+applyHelp({ DESCRIPTION, USAGE, args: Deno.args })
+
+//
+//
+//
+
+const parseOptions: ParseOptions = {
+    boolean: ["pretty"],
+    alias: { "pretty": "p"},
+}
+
+const {_: directInput, pretty} = parseArgs(Deno.args, parseOptions)
+
+
+const [command = "help"] = directInput
 
 switch (command.toString()) {
   case 'get': {
@@ -60,7 +103,7 @@ switch (command.toString()) {
   }
 
   default: {
-    console.log('No command found, expected: `json parse ...`')
+    console.log(formatHelpMessage({DESCRIPTION, USAGE}))
     Deno.exit(1)
   }
 }
@@ -87,7 +130,7 @@ function prettyFormat(json: string) {
 function encode(json: string) {
   return new TextEncoder().encode(`
 
-${json} 
+${json}
 
 `)
 }

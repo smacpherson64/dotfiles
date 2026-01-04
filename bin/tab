@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-DIR_NAME="$1"
-COMMAND="$2"
-
-osascript << EOF
-tell app "Terminal" to do script "cd ${DIR_NAME} && ${COMMAND}"
-EOF

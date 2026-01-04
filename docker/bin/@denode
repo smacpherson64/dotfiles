@@ -1,5 +1,37 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 set -e
+
+#
+#
+#
+
+source "$DOTFILES/functions/help.sh"
+
+DESCRIPTION="Opens a node docker container to run a node app."
+
+USAGE=$(cat <<EOF
+Usage: @denode [image] [dir]
+
+Options:
+  -h, --help            Show this help message
+  --description         Show descriptive summary
+
+  <image>               The node image to run inside (defaults to latest or .nvmrc if available)
+  <dir>                 The directory to load inside of the docker image
+
+Example:
+  @denode node:20 .
+
+EOF
+)
+
+
+applyHelp "$DESCRIPTION" "$USAGE" "all arguments optional" "$@"
+
+#
+#
+#
+
 image="node:latest"
 dir="."
 

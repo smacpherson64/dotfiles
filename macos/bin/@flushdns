@@ -1,0 +1,32 @@
+#!/usr/bin/env zsh
+set -e
+
+#
+#
+#
+
+source "$DOTFILES/functions/help.sh"
+
+DESCRIPTION="Flushes the macos DNS cache."
+
+USAGE=$(cat <<EOF
+Usage: @flushdns
+
+Options:
+  -h, --help            Show this help message
+  --description         Show descriptive summary
+
+Example:
+  @flushdns
+
+EOF
+)
+
+
+applyHelp "$DESCRIPTION" "$USAGE" "all arguments optional" "$@"
+
+#
+#
+#
+
+sudo killall -HUP mDNSResponder

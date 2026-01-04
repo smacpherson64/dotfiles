@@ -1,0 +1,39 @@
+#!/usr/bin/env zsh
+set -e
+
+#
+#
+#
+
+source "$DOTFILES/functions/help.sh"
+
+DESCRIPTION="Kills a process holding on to a port"
+
+USAGE=$(cat <<EOF
+Usage: @killport port
+
+Options:
+  -h, --help            Show this help message
+  --description         Show descriptive summary
+
+  <port>                The port of the process to clear.
+
+Example:
+  @killport 8080
+
+EOF
+)
+
+
+applyHelp "$DESCRIPTION" "$USAGE" "all arguments optional" "$@"
+
+#
+#
+#
+
+PROCESSES=$(lsof -t -i:$1);
+
+for process in $PROCESSES ; do
+  echo "Killing process $process"
+  kill $process
+done

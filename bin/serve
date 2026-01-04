@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-set -e
-
-exec deno run --allow-read --allow-net --allow-sys --no-config 'https://deno.land/std/http/file_server.ts' "$@"

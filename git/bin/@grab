@@ -1,0 +1,38 @@
+#!/usr/bin/env zsh
+set -e
+
+#
+#
+#
+
+source "$DOTFILES/functions/help.sh"
+
+DESCRIPTION="Gets the contents of a file from a git branch"
+
+USAGE=$(cat <<EOF
+Usage: @grab file [branch]
+
+Options:
+  -h, --help            Show this help message
+  --description         Show descriptive summary
+
+  <file>                The file to get from the cache
+  <branch>              The branch to get the file from (defaults to master)
+
+Example:
+  @grab example.js master
+
+EOF
+)
+
+
+applyHelp "$DESCRIPTION" "$USAGE" "has required arguments" "$@"
+
+#
+#
+#
+
+FILE="$1"
+BRANCH="${2:-master}"
+
+git show $BRANCH:$FILE

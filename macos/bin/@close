@@ -1,0 +1,33 @@
+#!/usr/bin/env zsh
+set -e
+
+#
+#
+#
+
+source "$DOTFILES/functions/help.sh"
+
+DESCRIPTION="Closes a mac application by name"
+
+USAGE=$(cat <<EOF
+Usage: @close application
+
+Options:
+  -h, --help            Show this help message
+  --description         Show descriptive summary
+
+  <application>         The application to quit
+
+Example:
+  @close Messages
+
+EOF
+)
+
+applyHelp "$DESCRIPTION" "$USAGE" "has required arguments" "$@"
+
+#
+#
+#
+
+osascript -e "quit app \"$1\""

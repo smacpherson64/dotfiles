@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-set -e
-
-# Flush the DNS cache
-sudo killall -HUP mDNSResponder

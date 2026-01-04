@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-set -e
-
-osascript -e "quit app \"$1\""

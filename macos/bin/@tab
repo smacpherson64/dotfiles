@@ -1,0 +1,42 @@
+#!/usr/bin/env zsh
+set -e
+
+#
+#
+#
+
+source "$DOTFILES/functions/help.sh"
+
+DESCRIPTION="Opens a new terminal tab and runs a specific command"
+
+USAGE=$(cat <<EOF
+Usage: @tab dirname command
+
+Options:
+  -h, --help            Show this help message
+  --description         Show descriptive summary
+
+  <dirname>             The directory to run the command in
+  <command>             The command to run inside of the directory
+
+Example:
+  @tab . echo "hi"
+
+EOF
+)
+
+
+applyHelp "$DESCRIPTION" "$USAGE" "has required arguments" "$@"
+
+#
+#
+#
+
+DIR_NAME="$1"
+shift
+
+COMMAND="$@"
+
+osascript << EOF
+tell app "Terminal" to do script "cd ${DIR_NAME} && ${COMMAND}"
+EOF

@@ -1,0 +1,39 @@
+#!/usr/bin/env zsh
+set -e
+
+#
+#
+#
+
+source "$DOTFILES/functions/help.sh"
+
+DESCRIPTION="Generates a specified number of random characters"
+
+USAGE=$(cat <<EOF
+Usage: @rand chars
+
+Options:
+  -h, --help            Show this help message
+  --description         Show descriptive summary
+
+  <chars>               The amount of random characters to generate.
+
+Example:
+  @rand 100
+
+EOF
+)
+
+
+applyHelp "$DESCRIPTION" "$USAGE" "all arguments optional" "$@"
+
+#
+#
+#
+
+if [ -z "${1}" ]; then
+  echo "ERROR: Specify amount of random characters to generate.";
+  return 1;
+fi;
+
+LC_ALL=C tr -dc 'A-Za-z0-9!"#$%&'\''()*+,-./:;<=>?@[\]^_`{|}~' </dev/urandom | head -c $1 ; echo

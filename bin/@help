@@ -1,0 +1,14 @@
+#!/usr/bin/env zsh
+set -e
+
+echo "Custom CLI commands, use --help on each for usage."
+echo "----------------------------------------------"
+echo ""
+
+find "$DOTFILES" -path "*/bin/*" -type f -not -name "@help" -exec basename {} + | sort | uniq | while read -r cmd; do
+    printf "    %-13s%8s" "$cmd"
+    "$cmd" --description 2>/dev/null || echo "(No description available)"
+done
+
+echo ""
+echo "----------------------------------------------"
