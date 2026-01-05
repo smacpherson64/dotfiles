@@ -25,7 +25,7 @@ EOF
 )
 
 
-applyHelp "$DESCRIPTION" "$USAGE" "all arguments optional" "$@"
+applyHelp "$DESCRIPTION" "$USAGE" "has required arguments" "$@"
 
 #
 #
