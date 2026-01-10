@@ -10,16 +10,17 @@ source "$DOTFILES/functions/help.sh"
 DESCRIPTION="Opens a node docker container to run a node app."
 
 USAGE=$(cat <<EOF
-Usage: @denode [image] [dir]
+USAGE:
+  @denode [image] [dir]
 
-Options:
+OPTIONS:
   -h, --help            Show this help message
   --description         Show descriptive summary
 
   <image>               The node image to run inside (defaults to latest or .nvmrc if available)
   <dir>                 The directory to load inside of the docker image
 
-Example:
+EXAMPLE:
   @denode node:20 .
 
 EOF
@@ -35,22 +36,25 @@ applyHelp "$DESCRIPTION" "$USAGE" "all arguments optional" "$@"
 image="node:latest"
 dir="."
 
-# 1. Check for Image Tag (e.g., node:20)
+
+# Check for Image Tag
+# E.G.: denode node:20
 if [[ $1 == node:* ]]; then
     image=$1
     shift
 fi
 
-# 2. Check for Directory
+# Check for Directory
+# E.G.: denode ./example_node_dir
 if [[ -d $1 ]]; then
     dir=$1
     shift
 fi
 
-# 3. Resolve absolute path
+# Resolve absolute path
 abs_dir=$(cd "$dir" && pwd)
 
-# 4. NVMRC Auto-Detection
+# NVMRC Auto-Detection
 # If the user didn't specify a version and an .nvmrc exists...
 if [[ "$image" == "node:latest" && -f "$abs_dir/.nvmrc" ]]; then
     nvm_version=$(cat "$abs_dir/.nvmrc" | tr -d '[:space:]' | sed 's/^v//')
@@ -58,11 +62,4 @@ if [[ "$image" == "node:latest" && -f "$abs_dir/.nvmrc" ]]; then
     echo "📂 Found .nvmrc, using $image"
 fi
 
-echo "🚀 Launching $image in $abs_dir"
-
-# 5. Run Docker
-docker run -it --rm \
-    -v "$abs_dir":/app \
-    -w /app \
-    "$@" \
-    "$image" /bin/bash
+docker run -it --rm -v "$abs_dir":/app -w /app --entrypoint /bin/bash "$@" "$image"
