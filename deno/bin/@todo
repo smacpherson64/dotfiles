@@ -1,0 +1,130 @@
+#!/usr/bin/env -S deno run --allow-read=/Users/seth/Desktop/@notes/data/TODO.md
+
+import {endOfDay} from "npm:date-fns"
+import {join} from "jsr:@std/path"
+import {parseArgs, type ParseOptions} from 'jsr:@std/cli/parse-args'
+import {applyHelp} from "../../_helpers/help.ts"
+import {notes} from "../../_helpers/paths.ts"
+import { parseISODate } from "../../_helpers/dates.ts"
+
+//
+//
+//
+
+const DESCRIPTION="A tool for getting my todos from the todo file in Obsidian."
+
+const USAGE=`
+  Usage:
+    @todo [amount] [show]
+    @todo -h | --help
+
+  Options:
+    -n, --number        The amount of todos to get
+    -s, --show          Which todos to include (non-dated are always displayed).
+                          'all' includes all todos.
+                          'upcoming' includes todos are after today.
+                          'current' includes todos up to today. (default)
+    -p, --pretty        Format the output with indentation
+    -h, --help          Show this help message
+    --description       Show descriptive summary
+
+  Examples:
+    '@todo --amount=5'
+`
+
+applyHelp({ DESCRIPTION, USAGE, args: Deno.args })
+
+//
+//
+//
+
+const parseOptions: ParseOptions = {
+  boolean: ["pretty"],
+    number: ["amount"],
+    alias: { amount: "a", show: "s", pretty: "p" },
+    default: {
+      amount: 1,
+      all: false,
+      show: "current"
+    }
+}
+
+const decoder = new TextDecoder()
+
+const { amount, show, pretty } = parseArgs(Deno.args, parseOptions)
+const todoFilePath = join(notes, 'data', 'TODO.md')
+
+const todosBuffer = Deno.readFileSync(todoFilePath)
+const todosString = decoder.decode(todosBuffer)
+const todosArray = todosString.split("\n")
+
+const results = []
+const today = endOfDay(new Date())
+
+for (const todo of todosArray) {
+  const fullTodoText = todo?.trim()
+
+  // Ignore empty ones
+  if (!fullTodoText) continue
+
+  // Ignore headings
+  if (fullTodoText.startsWith("#")) continue
+
+  // TODO does not have any type of date
+  if (!fullTodoText.match(/^\d\d\d\d/)) {
+    results.push({todo: fullTodoText, fullTodoText})
+    continue
+  }
+
+  const [dateLikeText, ...rest] = fullTodoText.split(" ")
+  const $todo = rest.join(" ")
+  const date = parseISODate(dateLikeText)
+
+  // Couldn't parse the date treat as without a date.
+  if (!date) {
+    results.push({todo: $todo, fullTodoText})
+    continue
+  }
+
+  switch (show) {
+    case "all": {
+      results.push({date, todo: $todo, fullTodoText})
+      continue
+    }
+    case "upcoming": {
+      if (date > today) {
+        results.push({date, todo: $todo, fullTodoText})
+      }
+      continue;
+    }
+    case "current": {
+      if (date < today) {
+        results.push({date, todo: $todo})
+      }
+      continue
+    }
+  }
+
+  results.push({todo: $todo, fullTodoText})
+}
+
+const items = results.slice(0, amount)
+let output = ""
+
+if (pretty) {
+  output += `${show} todos:\n\n`
+  output += items.map((item, i) => {
+    const number = i + 1
+
+    if (item.date) {
+      return `  ${number.toString().padStart(3, " ")}: ${item.todo} by ${item.date.toISOString()}`
+    }
+    return `  ${number.toString().padStart(3, " ")}: ${item.todo}`
+  }).join("\n\n")
+} else {
+  output = JSON.stringify(items)
+}
+
+const resultBuffer = new TextEncoder().encode(output)
+Deno.stdout.write(resultBuffer)
+Deno.exit(0)
