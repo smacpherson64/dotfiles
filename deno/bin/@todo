@@ -72,40 +72,40 @@ for (const todo of todosArray) {
 
   // TODO does not have any type of date
   if (!fullTodoText.match(/^\d\d\d\d/)) {
-    results.push({todo: fullTodoText, fullTodoText})
+    results.push({task: fullTodoText})
     continue
   }
 
   const [dateLikeText, ...rest] = fullTodoText.split(" ")
-  const $todo = rest.join(" ")
+  const task = rest.join(" ")
   const date = parseISODate(dateLikeText)
 
   // Couldn't parse the date treat as without a date.
   if (!date) {
-    results.push({todo: $todo, fullTodoText})
+    results.push({task, metadata: {fullTodoText}})
     continue
   }
 
   switch (show) {
     case "all": {
-      results.push({date, todo: $todo, fullTodoText})
+      results.push({task, date, metadata: {fullTodoText}})
       continue
     }
     case "upcoming": {
       if (date > today) {
-        results.push({date, todo: $todo, fullTodoText})
+        results.push({task, date, metadata: {fullTodoText}})
       }
       continue;
     }
     case "current": {
       if (date < today) {
-        results.push({date, todo: $todo})
+        results.push({task, date, metadata: {fullTodoText}})
       }
       continue
     }
   }
 
-  results.push({todo: $todo, fullTodoText})
+  results.push({task, metadata: {fullTodoText}})
 }
 
 const items = results.slice(0, amount)
@@ -117,9 +117,9 @@ if (pretty) {
     const number = i + 1
 
     if (item.date) {
-      return `  ${number.toString().padStart(3, " ")}: ${item.todo} by ${item.date.toISOString()}`
+      return `  ${number.toString().padStart(3, " ")}: ${item.task} :: ${item.date.toISOString()}`
     }
-    return `  ${number.toString().padStart(3, " ")}: ${item.todo}`
+    return `  ${number.toString().padStart(3, " ")}: ${item.task}`
   }).join("\n\n")
 } else {
   output = JSON.stringify(items)
