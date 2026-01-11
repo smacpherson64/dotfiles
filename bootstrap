@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
 set -e
 
-export ZSH="$HOME/.dotfiles"
-export DOTFILES_ROOT="$HOME/.dotfiles"
+export DOTFILES="$HOME/.dotfiles"
 
-cd "$ZSH"
+cd "$DOTFILES"
 
-for src in $(find -H "$DOTFILES_ROOT" -maxdepth 2 -name '*.symlink' -not -path '*.git*')
+for src in $(find -H "$DOTFILES" -maxdepth 2 -name '*.symlink' -not -path '*.git*')
   do
     dst="$HOME/.$(basename "${src%.*}")"
     rm -rf "$dst"
     ln -s "$src" "$dst"
   done
 
-$DOTFILES_ROOT/macos/set-defaults.sh
-
+$DOTFILES/macos/set-defaults.sh

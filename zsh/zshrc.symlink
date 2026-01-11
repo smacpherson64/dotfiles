@@ -1,31 +1,19 @@
-export ZSH="$HOME/.dotfiles"
 
-# Store all ZSH files
+export DOTFILES="$HOME/.dotfiles"
+export PATH="$DOTFILES/bin:$DOTFILES/local/bin:$PATH"
+
+# Store all zsh dotfiles
 typeset -U config_files
-config_files=($ZSH/**/*.zsh)
+config_files=($DOTFILES/**/*.zsh)
 
 # Load all environment variables
-for file in $config_files; do
-  case "$file" in
-    */env.zsh)
-      source "$file"
-      ;;
-    *)
-      continue
-      ;;
-  esac
+for file in ${(M)config_files:#*env.zsh}; do
+  source "$file"
 done
 
 # Load all other files
-for file in $config_files; do
-  case "$file" in
-    */env.zsh|*/completion.zsh|*/action.zsh)
-      continue
-      ;;
-    *)
-      source "$file"
-      ;;
-  esac
+for file in ${config_files:#*/(env|completion).zsh}; do
+  source "$file"
 done
 
 # initialize autocomplete here, otherwise functions won't be loaded
@@ -33,27 +21,16 @@ autoload -U compinit
 compinit
 
 # Load completion files
-for file in $config_files; do
-  case "$file" in
-    */completion.zsh)
-      source "$file"
-      ;;
-    *)
-      continue
-      ;;
-  esac
+for file in ${(M)config_files:#*completion.zsh}; do
+  source "$file"
 done
 
-# Load action files
-for file in $config_files; do
-  case "$file" in
-    */action.zsh)
-      source "$file"
-      ;;
-    *)
-      continue
-      ;;
-  esac
-done
+# Credits to https://coderwall.com/p/jpj_6q/zsh-better-history-searching-with-arrow-keys
+autoload -U up-line-or-beginning-search
+autoload -U down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+bindkey "^[[A" up-line-or-beginning-search # Up
+bindkey "^[[B" down-line-or-beginning-search # Down
 
 unset config_files
