@@ -1,0 +1,67 @@
+#!/usr/bin/env -S deno run
+
+import { parseArgs, type ParseOptions } from 'jsr:@std/cli/parse-args'
+import { TextLineStream } from "jsr:@std/streams";
+import {applyHelp} from "../../_helpers/help.ts"
+
+//
+//
+//
+
+const DESCRIPTION="A tool picking specific lines from text"
+
+const USAGE=`
+  Usage:
+    @lines [--to] [--from] <text>
+    @lines -h | --help
+
+  Options:
+    -t, --to           The inclusive lines to get up to
+    -f, --from         The inclusive lines to start from
+    -h, --help         Show this help message
+    --description      Show descriptive summary
+
+
+  Arguments:
+    [text]             Reads from standard input (stdin).
+
+  Examples:
+    echo '{"a":1}' | @lines -f=5 -t=8
+
+`
+
+applyHelp({ DESCRIPTION, USAGE, args: Deno.args })
+
+//
+//
+//
+
+const parseOptions: ParseOptions = {
+    number: ["from", "to"],
+    alias: { "from": "f", "to": "t"},
+}
+
+const {from = 0, to = Infinity} = parseArgs(Deno.args, parseOptions)
+
+const encoder = new TextEncoder();
+
+// Deno.stdin.readable is a ReadableStream<Uint8Array>
+const readable = Deno.stdin.readable
+  .pipeThrough(new TextDecoderStream()) // Decodes bytes to strings
+  .pipeThrough(new TextLineStream()); // Splits the stream into lines
+
+let count = 0;
+
+for await (const line of readable) {
+  count++
+
+  if (count < from) {
+    continue;
+  }
+
+  if (count > to) {
+    break;
+  }
+
+  await Deno.stdout.write(encoder.encode(`${line}\n`));
+}
