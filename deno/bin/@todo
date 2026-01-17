@@ -1,21 +1,23 @@
 #!/usr/bin/env -S deno run --allow-read=/Users/seth/Desktop/@notes/data/TODO.md
 
-import {endOfDay} from "npm:date-fns"
-import {join} from "jsr:@std/path"
-import {parseArgs, type ParseOptions} from 'jsr:@std/cli/parse-args'
-import {applyHelp} from "../../_helpers/help.ts"
-import {notes} from "../../_helpers/paths.ts"
-import { parseISODate } from "../../_helpers/dates.ts"
+import { endOfDay } from "date-fns";
+import { join } from "@std/path";
+import { parseArgs, type ParseOptions } from "@std/cli/parse-args";
+import { applyHelp } from "../../_helpers/help.ts";
+import { notes } from "../../_helpers/paths.ts";
+import { parseISODate } from "../../_helpers/dates.ts";
+import { cut } from "../../_helpers/strings.ts";
 
 //
 //
 //
 
-const DESCRIPTION="A tool for getting my todos from the todo file in Obsidian."
+const DESCRIPTION =
+  "A tool for getting my todos from the todo file in Obsidian.";
 
-const USAGE=`
+const USAGE = `
   Usage:
-    @todo [amount] [show]
+    @todo [--amount] [--show]
     @todo -h | --help
 
   Options:
@@ -30,9 +32,9 @@ const USAGE=`
 
   Examples:
     '@todo --amount=5'
-`
+`;
 
-applyHelp({ DESCRIPTION, USAGE, args: Deno.args })
+applyHelp({ DESCRIPTION, USAGE, args: Deno.args });
 
 //
 //
@@ -40,90 +42,135 @@ applyHelp({ DESCRIPTION, USAGE, args: Deno.args })
 
 const parseOptions: ParseOptions = {
   boolean: ["pretty"],
-    number: ["amount"],
-    alias: { amount: "a", show: "s", pretty: "p" },
-    default: {
-      amount: 1,
-      show: "current"
-    }
-}
+  string: ["tags"],
+  alias: { amount: "a", show: "s", pretty: "p", tags: "t" },
+  default: {
+    amount: 1,
+    show: "current",
+    tags: "",
+  },
+};
 
-const decoder = new TextDecoder()
+const decoder = new TextDecoder();
 
-const { amount, show, pretty } = parseArgs(Deno.args, parseOptions)
-const todoFilePath = join(notes, 'data', 'TODO.md')
+const { amount, show, pretty, tags: stringTags } = parseArgs(
+  Deno.args,
+  parseOptions,
+);
 
-const todosBuffer = Deno.readFileSync(todoFilePath)
-const todosString = decoder.decode(todosBuffer)
-const todosArray = todosString.split("\n")
+const searchTags = typeof stringTags === "string"
+  ? stringTags.split(",").reduce<string[]>(
+    (acc, tag) => {
+      const item = tag?.toLowerCase().trim();
+      return item ? [...acc, item] : acc;
+    },
+    [],
+  )
+  : [];
 
-const results = []
-const today = endOfDay(new Date())
+const todoFilePath = join(notes, "data", "TODO.md");
+
+const todosBuffer = Deno.readFileSync(todoFilePath);
+const todosString = decoder.decode(todosBuffer);
+const todosArray = todosString.split("\n");
+
+const results = [];
+const today = endOfDay(new Date());
 
 for (const todo of todosArray) {
-  const fullTodoText = todo?.trim()
+  const item: {
+    task: string;
+    tags: string[];
+    date?: Date;
+    metadata: { todo: string };
+  } = {
+    task: todo?.trim(),
+    tags: [],
+    metadata: { todo },
+  };
 
   // Ignore empty ones
-  if (!fullTodoText) continue
+  if (!item.task) continue;
 
   // Ignore headings
-  if (fullTodoText.startsWith("#")) continue
+  if (item.task.startsWith("#")) continue;
 
-  // TODO does not have any type of date
-  if (!fullTodoText.match(/^\d\d\d\d/)) {
-    results.push({task: fullTodoText})
-    continue
+  // When tags are provided, make sure all match
+  if (searchTags.some((tag) => !item.task.includes(`#${tag}`))) continue;
+
+  const matches = Array.from(item.task.matchAll(/#[\S]{1,} ?/g)).reverse();
+
+  for (const match of matches) {
+    const [text] = match;
+
+    const tag = text.trim().slice(1);
+    item.tags.push(tag);
+
+    item.task = cut(
+      { from: match.index, to: match.index + text.length },
+      item.task,
+    ).trim();
   }
 
-  const [dateLikeText, ...rest] = fullTodoText.split(" ")
-  const task = rest.join(" ")
-  const date = parseISODate(dateLikeText)
+  // Todo doesn't have date, add it.
+  if (!item.task.match(/^\d\d\d\d/)) {
+    results.push(item);
+    continue;
+  }
+
+  const [dateLikeText, ...rest] = item.task.split(" ");
+  item.task = rest.join(" ");
+
+  const date = parseISODate(dateLikeText);
 
   // Couldn't parse the date treat as without a date.
   if (!date) {
-    results.push({task, metadata: {fullTodoText}})
-    continue
+    results.push(item);
+    continue;
   }
 
+  item.date = date;
+
   switch (show) {
-    case "all": {
-      results.push({task, date, metadata: {fullTodoText}})
-      continue
-    }
     case "upcoming": {
       if (date > today) {
-        results.push({task, date, metadata: {fullTodoText}})
+        results.push(item);
       }
       continue;
     }
     case "current": {
       if (date < today) {
-        results.push({task, date, metadata: {fullTodoText}})
+        results.push(item);
       }
-      continue
+      continue;
+    }
+    case "all":
+    default: {
+      results.push(item);
+      continue;
     }
   }
-
-  results.push({task, metadata: {fullTodoText}})
 }
 
-const items = results.slice(0, amount)
-let output = ""
+const items = results.slice(0, amount);
+let output = "";
 
 if (pretty) {
-  output += `${show} todos:\n\n`
+  output += `${show} todos:\n\n`;
   output += items.map((item, i) => {
-    const number = i + 1
+    const number = i + 1;
 
     if (item.date) {
-      return `  ${number.toString().padStart(3, " ")}: ${item.task} :: ${item.date.toISOString()}`
+      return `  ${
+        number.toString().padStart(3, " ")
+      }: ${item.task} :: ${item.date.toISOString()}`;
     }
-    return `  ${number.toString().padStart(3, " ")}: ${item.task}`
-  }).join("\n\n")
+    return `  ${number.toString().padStart(3, " ")}: ${item.task}`;
+  }).join("\n\n");
 } else {
-  output = JSON.stringify(items)
+  output = JSON.stringify(items);
 }
 
-const resultBuffer = new TextEncoder().encode(output)
-Deno.stdout.write(resultBuffer)
-Deno.exit(0)
+const resultBuffer = new TextEncoder().encode(output);
+Deno.stdout.write(resultBuffer);
+Deno.exit(0);

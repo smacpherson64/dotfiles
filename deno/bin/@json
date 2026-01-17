@@ -11,7 +11,7 @@ const DESCRIPTION="A tool for working with parsed json input"
 
 const USAGE=`
   Usage:
-    @json get <path> [--pretty] [<json>]
+    @json get [--pretty] <path> [<json>]
     @json parse [--pretty] [<json>]
     @json -h | --help
 

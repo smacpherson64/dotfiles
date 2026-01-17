@@ -12,7 +12,7 @@ const DESCRIPTION="Creates a url that highlights certain text on a page in web b
 
 const USAGE=`
   Usage:
-    @url-search <text> --url
+    @url-search --url <text>
 
   Options:
     -u, --url         The url to search
