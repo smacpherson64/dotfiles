@@ -44,7 +44,6 @@ const parseOptions: ParseOptions = {
     alias: { amount: "a", show: "s", pretty: "p" },
     default: {
       amount: 1,
-      all: false,
       show: "current"
     }
 }
