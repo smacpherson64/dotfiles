@@ -1,0 +1,32 @@
+#!/usr/bin/env zsh
+set -e
+
+#
+#
+#
+
+source "$DOTFILES/functions/help.sh"
+
+DESCRIPTION="Opens up a QR code creator"
+
+USAGE=$(cat <<EOF
+Usage: @qr
+
+Options:
+  -h, --help            Show this help message
+  --description         Show descriptive summary
+
+Example:
+  @qr
+
+EOF
+)
+
+
+applyHelp "$DESCRIPTION" "$USAGE" "all arguments optional" "$@"
+
+#
+#
+#
+
+shortcuts run @qr
