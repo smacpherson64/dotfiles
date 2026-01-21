@@ -17,11 +17,12 @@ const DESCRIPTION =
 
 const USAGE = `
   Usage:
-    @todo [--amount] [--show]
+    @todo [--amount] [--show] [--tags=tag1,tag2]
     @todo -h | --help
 
   Options:
-    -n, --number        The amount of todos to get
+    -a, --amount        The amount of todos to get
+    -t, --tags          A comma separated list of tags to include. Other tags will be excluded.
     -s, --show          Which todos to include (non-dated are always displayed).
                           'all' includes all todos.
                           'upcoming' includes todos are after today.
@@ -32,6 +33,7 @@ const USAGE = `
 
   Examples:
     '@todo --amount=5'
+    '@todo --amount=5 --tags=work --pretty'
 `;
 
 applyHelp({ DESCRIPTION, USAGE, args: Deno.args });
