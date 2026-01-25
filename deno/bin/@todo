@@ -23,6 +23,7 @@ const USAGE = `
   Options:
     -a, --amount        The amount of todos to get
     -t, --tags          A comma separated list of tags to include. Other tags will be excluded.
+    -i, --ignore        A comma separated list of tags to ignore.
     -s, --show          Which todos to include (non-dated are always displayed).
                           'all' includes all todos.
                           'upcoming' includes todos are after today.
@@ -43,32 +44,26 @@ applyHelp({ DESCRIPTION, USAGE, args: Deno.args });
 //
 
 const parseOptions: ParseOptions = {
-  boolean: ["pretty"],
+  boolean: ["pretty", "ignore"],
   string: ["tags"],
-  alias: { amount: "a", show: "s", pretty: "p", tags: "t" },
+  alias: { amount: "a", show: "s", pretty: "p", tags: "t", ignore: "i" },
   default: {
     amount: 1,
     show: "current",
     tags: "",
+    ignore: ""
   },
 };
 
 const decoder = new TextDecoder();
 
-const { amount, show, pretty, tags: stringTags } = parseArgs(
+const { amount, show, pretty, tags: tagsString, ignore: ignoredTagsString } = parseArgs(
   Deno.args,
   parseOptions,
 );
 
-const searchTags = typeof stringTags === "string"
-  ? stringTags.split(",").reduce<string[]>(
-    (acc, tag) => {
-      const item = tag?.toLowerCase().trim();
-      return item ? [...acc, item] : acc;
-    },
-    [],
-  )
-  : [];
+const ignoredTags = parseTags(ignoredTagsString)
+const tags = parseTags(tagsString)
 
 const todoFilePath = join(notes, "data", "TODO.md");
 
@@ -98,7 +93,10 @@ for (const todo of todosArray) {
   if (item.task.startsWith("#")) continue;
 
   // When tags are provided, make sure all match
-  if (searchTags.some((tag) => !item.task.includes(`#${tag}`))) continue;
+  if (tags.some((tag) => !item.task.includes(`#${tag}`))) continue;
+
+  // Ignore tags
+  if (ignoredTags.some((tag => item.task.includes(`#${tag}`)))) continue;
 
   const matches = Array.from(item.task.matchAll(/#[\S]{1,} ?/g)).reverse();
 
@@ -176,3 +174,16 @@ if (pretty) {
 const resultBuffer = new TextEncoder().encode(output);
 Deno.stdout.write(resultBuffer);
 Deno.exit(0);
+
+
+//
+//
+//
+
+function parseTags(string?: unknown): string[] {
+  if (!string) return []
+  if (typeof string !== "string") return []
+
+  const tags = ignoredTags.split(",").map(tag => tag.toLowerLocaleCase().trim()).filter(Boolean)
+  return tags
+}
