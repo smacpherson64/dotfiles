@@ -51,19 +51,20 @@ const parseOptions: ParseOptions = {
     amount: 1,
     show: "current",
     tags: "",
-    ignore: ""
+    ignore: "",
   },
 };
 
 const decoder = new TextDecoder();
 
-const { amount, show, pretty, tags: tagsString, ignore: ignoredTagsString } = parseArgs(
-  Deno.args,
-  parseOptions,
-);
+const { amount, show, pretty, tags: tagsString, ignore: ignoredTagsString } =
+  parseArgs(
+    Deno.args,
+    parseOptions,
+  );
 
-const ignoredTags = parseTags(ignoredTagsString)
-const tags = parseTags(tagsString)
+const ignoredTags = parseTags(ignoredTagsString);
+const tags = parseTags(tagsString);
 
 const todoFilePath = join(notes, "data", "TODO.md");
 
@@ -96,7 +97,7 @@ for (const todo of todosArray) {
   if (tags.some((tag) => !item.task.includes(`#${tag}`))) continue;
 
   // Ignore tags
-  if (ignoredTags.some((tag => item.task.includes(`#${tag}`)))) continue;
+  if (ignoredTags.some((tag) => item.task.includes(`#${tag}`))) continue;
 
   const matches = Array.from(item.task.matchAll(/#[\S]{1,} ?/g)).reverse();
 
@@ -175,15 +176,16 @@ const resultBuffer = new TextEncoder().encode(output);
 Deno.stdout.write(resultBuffer);
 Deno.exit(0);
 
-
 //
 //
 //
 
 function parseTags(string?: unknown): string[] {
-  if (!string) return []
-  if (typeof string !== "string") return []
+  if (!string) return [];
+  if (typeof string !== "string") return [];
 
-  const tags = ignoredTags.split(",").map(tag => tag.toLowerLocaleCase().trim()).filter(Boolean)
-  return tags
+  const tags = string.split(",").map((tag) => tag.toLocaleLowerCase().trim())
+    .filter(Boolean);
+
+  return tags;
 }
