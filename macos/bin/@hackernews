@@ -1,0 +1,42 @@
+#!/usr/bin/env zsh
+set -e
+
+#
+#
+#
+
+source "$DOTFILES/functions/help.sh"
+
+DESCRIPTION="Creates hackernews links for a user"
+
+USAGE=$(cat <<EOF
+Usage: @hackernews [command] [user]
+
+Options:
+  -h, --help            Show this help message
+  --description         Show descriptive summary
+
+Commands:
+  comments              Find all comments by a specific user
+  submitted             Find all submissions by a specific user
+  upvoted               Find all submissions by me
+  favorites             Find all of my favorite submissions
+
+
+Arguments:
+  <user>                The user to find the details
+
+Example:
+  @hackernews comments smac__
+  @hackernews submissions smac__
+
+EOF
+)
+
+applyHelp "$DESCRIPTION" "$USAGE" "has required arguments" "$@"
+
+#
+#
+#
+
+echo "https://news.ycombinator.com/$1?id=$2"
