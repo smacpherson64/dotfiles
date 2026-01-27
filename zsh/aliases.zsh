@@ -6,3 +6,6 @@ alias @reload='. ~/.zshrc'
 
 # Easier access to printing
 alias @printer="lpr"
+
+# Nicer name
+alias @read='cat'

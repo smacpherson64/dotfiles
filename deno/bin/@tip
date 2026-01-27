@@ -1,0 +1,90 @@
+#!/usr/bin/env -S deno run
+
+import { parseArgs, type ParseOptions } from "@std/cli/parse-args";
+import { applyHelp, formatHelpMessage } from "../../_helpers/help.ts";
+
+//
+//
+//
+
+const DESCRIPTION = "A tool for markdown tips";
+
+const USAGE = `
+  Usage:
+    @tip create <input>
+    @tip -h | --help
+
+  Options:
+    -h, --help         Show this help message
+    --description      Show descriptive summary
+
+  Commands:
+    create             Creates a tip from a text input
+
+  Arguments:
+    [input]             The input string. If not provided, reads from standard input (stdin).
+
+  Examples:
+    echo '{"a":1}' | @tip create
+    @tip create '{"a":{"b":2}}'
+`;
+
+applyHelp({ DESCRIPTION, USAGE, args: Deno.args });
+
+//
+//
+//
+
+const encoder = new TextEncoder();
+
+const parseOptions: ParseOptions = {};
+
+const { _: directInput } = parseArgs(Deno.args, parseOptions);
+
+const [command = "help"] = directInput;
+
+switch (command.toString()) {
+  case "create": {
+    const [, ...rest] = directInput;
+    const input = await getInput(rest);
+
+    const result = ["", "> [!TIP]", ">", "> ```"];
+
+    for (const line of input.split("\n")) {
+      result.push(`> ${line}`);
+    }
+
+    result.push("> ```", "> ", "");
+
+    const text = result.join("\n");
+
+    Deno.stdout.write(encoder.encode(text));
+    Deno.exit(0);
+    break;
+  }
+
+  default: {
+    console.log(formatHelpMessage({ DESCRIPTION, USAGE }));
+    Deno.exit(1);
+  }
+}
+
+////////////////////////////////
+// #region . Utils
+////////////////////////////////
+
+async function getInput(
+  directInput: string | number | (string | number)[] = "",
+) {
+  let input = [directInput].flat().join(" ");
+
+  // If no direct input provided use the piped in value
+  input = input || (await new Response(Deno.stdin.readable).text());
+
+  // default to empty string
+  input = input || "";
+
+  input = input.trim();
+
+  return input;
+}
