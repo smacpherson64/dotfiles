@@ -2,6 +2,7 @@
   "imports": {
     "@std/cli": "jsr:@std/cli@^1.0.26",
     "@std/path": "jsr:@std/path@^1.1.4",
+    "@std/random": "jsr:@std/random@^0.1.5",
     "date-fns": "npm:date-fns@^4.1.0"
   }
 }

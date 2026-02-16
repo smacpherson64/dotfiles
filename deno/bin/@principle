@@ -1,0 +1,119 @@
+#!/usr/bin/env -S deno run --allow-read=/Users/seth/Desktop/@notes/data/Principles.md
+
+import { shuffle } from "@std/random";
+import { parseArgs, type ParseOptions } from "@std/cli/parse-args";
+import { join } from "@std/path";
+import { applyHelp } from "../../_helpers/help.ts";
+import { notes } from "../../_helpers/paths.ts";
+import { matchStrings } from "../../_helpers/strings.ts";
+
+//
+//
+//
+
+const DESCRIPTION = "A tool for getting my principles from Obsidian.";
+
+const USAGE = `
+  Usage:
+    @principle [--amount] [--pretty] [--from]
+    @principle -h | --help
+
+  Options:
+    -a, --amount        The amount of items to get
+    -p, --pretty        Format the output with indentation
+    -f, --from          Filters to a specific author
+    -h, --help          Show this help message
+    --description       Show descriptive summary
+
+  Examples:
+    @principle --amount=5
+`;
+
+applyHelp({ DESCRIPTION, USAGE, args: Deno.args });
+
+//
+//
+//
+
+const parseOptions: ParseOptions = {
+  alias: { amount: "a", from: "f", pretty: "p" },
+  default: {
+    amount: 1,
+  },
+};
+
+const decoder = new TextDecoder();
+
+const { amount, from, pretty } = parseArgs(
+  Deno.args,
+  parseOptions,
+);
+
+const filePath = join(notes, "data", "Principles.md");
+
+const todosBuffer = Deno.readFileSync(filePath);
+const todosString = decoder.decode(todosBuffer);
+const principlesByAuthor = parse(todosString);
+
+let list = [];
+
+if (from) {
+  const allAuthors = Object.keys(principlesByAuthor);
+  const selectedAuthor = allAuthors.find((author) =>
+    matchStrings(author, from)
+  );
+  list = selectedAuthor ? principlesByAuthor[selectedAuthor] : [];
+} else {
+  list = Object.values(principlesByAuthor).flat();
+}
+
+list = shuffle(list).slice(0, amount);
+
+let output = "";
+
+if (pretty) {
+  output += `\n`;
+  output += list.map((item, i) => {
+    const number = i + 1;
+
+    return `  ${
+      number.toString().padStart(3, " ")
+    }: ${item.text} - ${item.from}`;
+  }).join("\n\n");
+} else {
+  output = JSON.stringify(list);
+}
+
+const resultBuffer = new TextEncoder().encode(output);
+Deno.stdout.write(resultBuffer);
+Deno.exit(0);
+
+//
+//
+//
+
+function parse(
+  text: string,
+): { [key: string]: { from: string; text: string }[] } {
+  let lastAuthor = "";
+
+  const result = text.split("\n").reduce((acc, line) => {
+    const text = line?.trim() || "";
+
+    // Ignore empty lines
+    if (!text) return acc;
+
+    // Keep track of the author of the quotes by headings
+    if (text.startsWith("#")) {
+      lastAuthor = text.replace(/^\#{1,} ?/, "").trim();
+      return acc;
+    }
+
+    acc[lastAuthor] ??= [];
+    acc[lastAuthor].push({ from: lastAuthor, text });
+
+    return acc;
+  }, {} as { [key: string]: { from: string; text: string }[] });
+
+  return result;
+}

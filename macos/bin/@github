@@ -1,0 +1,47 @@
+#!/usr/bin/env zsh
+set -e
+
+#
+#
+#
+
+source "$DOTFILES/functions/help.sh"
+
+DESCRIPTION="Opens github links"
+
+USAGE=$(cat <<EOF
+Usage: @github [command]
+
+Options:
+  -h, --help            Show this help message
+  --description         Show descriptive summary
+
+Commands:
+  issues                Finds my open issues assigned to me
+  prs                   Finds my open PRs
+
+Example:
+  @github issues
+
+EOF
+)
+
+applyHelp "$DESCRIPTION" "$USAGE" "has required arguments" "$@"
+
+#
+#
+#
+
+command="${1:-help}"
+
+case $command in
+  "issues")
+    open https://github.com/issues/assigned
+    ;;
+  "prs")
+    open https://github.com/pulls
+    ;;
+  *)
+    applyHelp "$DESCRIPTION" "$USAGE" "has required arguments" ""
+    ;;
+esac

@@ -5,7 +5,9 @@
     "jsr:@std/cli@*": "1.0.26",
     "jsr:@std/cli@^1.0.26": "1.0.26",
     "jsr:@std/internal@^1.0.12": "1.0.12",
+    "jsr:@std/path@*": "1.1.4",
     "jsr:@std/path@^1.1.4": "1.1.4",
+    "jsr:@std/random@~0.1.5": "0.1.5",
     "jsr:@std/streams@*": "1.0.14",
     "npm:date-fns@^4.1.0": "4.1.0"
   },
@@ -28,6 +30,9 @@
         "jsr:@std/internal"
       ]
     },
+    "@std/random@0.1.5": {
+      "integrity": "d26614c4f6c441afc22397a1c5b8f27d02ab8f5572f1d29e7b0cd57f3d548235"
+    },
     "@std/streams@1.0.14": {
       "integrity": "c0df6cdd73bd4bbcbe4baa89e323b88418c90ceb2d926f95aa99bdcdbfca2411",
       "dependencies": [
@@ -44,6 +49,7 @@
     "dependencies": [
       "jsr:@std/cli@^1.0.26",
       "jsr:@std/path@^1.1.4",
+      "jsr:@std/random@~0.1.5",
       "npm:date-fns@^4.1.0"
     ]
   }

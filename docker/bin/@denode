@@ -11,7 +11,7 @@ DESCRIPTION="Opens a node docker container to run a node app."
 
 USAGE=$(cat <<EOF
 USAGE:
-  @denode [image] [dir]
+  @denode [image] [dir] [mount]
 
 OPTIONS:
   -h, --help            Show this help message
@@ -62,4 +62,13 @@ if [[ "$image" == "node:latest" && -f "$abs_dir/.nvmrc" ]]; then
     echo "📂 Found .nvmrc, using $image"
 fi
 
-docker run -it --rm -v "$abs_dir":/app -w /app --entrypoint /bin/bash "$@" "$image"
+mount="/app"
+
+# Check for custom root directory
+# E.G.: denode node:25 . /root
+if [[ $1 == *\/* ]]; then
+    mount=$1
+    shift
+fi
+
+docker run -it --rm -v "$abs_dir":"$mount" -w "$mount" --entrypoint /bin/bash "$@" "$image"
