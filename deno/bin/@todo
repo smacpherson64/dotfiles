@@ -94,12 +94,12 @@ for (const todo of todosArray) {
   if (item.task.startsWith("#")) continue;
 
   // When tags are provided, make sure all match
-  if (tags.some((tag) => !item.task.includes(`#${tag}`))) continue;
+  if (tags.some((tag) => !item.task.includes(` #${tag}`))) continue;
 
   // Ignore tags
-  if (ignoredTags.some((tag) => item.task.includes(`#${tag}`))) continue;
+  if (ignoredTags.some((tag) => item.task.includes(` #${tag}`))) continue;
 
-  const matches = Array.from(item.task.matchAll(/#[\S]{1,} ?/g)).reverse();
+  const matches = Array.from(item.task.matchAll(/ #[\S]{1,} ?/g)).reverse();
 
   for (const match of matches) {
     const [text] = match;
