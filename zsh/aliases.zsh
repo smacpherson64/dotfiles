@@ -9,3 +9,7 @@ alias @printer="lpr"
 
 # Nicer name
 alias @read='cat'
+
+alias @touched="ls -lturR | grep '^-'"
+
+alias @keepalive="caffeinate -dimsu"
