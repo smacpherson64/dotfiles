@@ -21,7 +21,7 @@ OPTIONS:
   <dir>                 The directory to load inside of the docker image
 
 EXAMPLE:
-  @denode node:20 .
+  @denode node:24 .
 
 EOF
 )
@@ -65,7 +65,7 @@ fi
 mount="/app"
 
 # Check for custom root directory
-# E.G.: denode node:25 . /root
+# E.G.: @denode node:24 . /root
 if [[ $1 == *\/* ]]; then
     mount=$1
     shift

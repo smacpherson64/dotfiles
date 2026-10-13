@@ -22,4 +22,4 @@ Move to each project's `collaboration/rules/` as those exist.
 - Prefer DenoJS. Prefer Vite, React, ShadCN, TailwindCSS.
 - Move business logic, rules, workflows, effects and state up and out of React.
   `useEffect` and `useState` only in leaf nodes (specialized inputs, DOM work).
-- Web UI follows `docs/A11Y.md`.
+- Web UI follows `@A11Y.md`.

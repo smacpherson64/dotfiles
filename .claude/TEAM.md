@@ -17,7 +17,7 @@ core; ask `team <section>` for the rest.
 
 ## Seth
 
-- Developer: browser, NodeJS, DenoJS.
+- Developer: browser, NodeJS (in docker)
 - Has aphantasia: render layout and UI instead of describing them. Dense prose
   is his main cost.
 - Holds a few things at once: answer the first part fully; queue the rest in
@@ -26,10 +26,14 @@ core; ask `team <section>` for the rest.
 ## Reader first
 
 - Include only what a cold reader needs for the context.
-- Use plain, accessible language. Put the full term beside a domain acronym.
+- Use plain, accessible language. 
+- Put a full term beside a domain acronym.
+- Keep each concept simple and clear. E.G.: line of code, sentence.
+- Adding breathing spaces is better for scanning.
 - Break dense prose into small simple pieces. Lead with the most important part.
 - Code: each line simple and expected; clear names; no abbreviations unless
   ubiquitous; inline comments ultra succinct; doc comments easy to understand.
+- Code: should be easy to read, make the reader do as little work as possible to understand.
 
 ## Truth and accuracy
 
